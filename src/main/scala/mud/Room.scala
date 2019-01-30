@@ -13,7 +13,7 @@ class Room (
   
   def getNumber(): Int = number
   
-  def getExit(dir: Int): Option[Room] = if(exits(dir) == -1) None else Some(Room.rooms(exits(dir)))
+  def getExit(dir: Int): Option[Int] = if(exits(dir) == -1) None else Some(exits(dir))
   
   def getItem(itemName: String): Option[Item] = ???
   

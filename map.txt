@@ -1,10 +1,10 @@
-3 //Number of rooms
-0 //Room Number
-CSI 257 //Room Name
-A dimly lit room with the glow of monitors. A sense of oppression lingers in the air. //Room Description
-2 //Number of Items
-chair //Item 1
-Something to sit on. //Item 1 description
-computer //Item 2
-This is your tool for world domination. //Item 2 description
--1,1,-1,-1,-1,-1 //Possible directions N,S,E,W,U,D
+3
+0
+CSI 257
+A dimly lit room with the glow of monitors. A sense of oppression lingers in the air.
+2
+chair
+Something to sit on.
+computer
+This is your tool for world domination.
+-1,1,-1,-1,-1,-1
