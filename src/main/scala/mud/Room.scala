@@ -15,6 +15,7 @@ class Room (
   
   def getExit(dir: Int): Option[Int] = if(exits(dir) == -1) None else Some(exits(dir))
   
+  //Pick if an item (IF IT EXISTS) from a room. addToInventory (class Player) will use this to add the item to a player's inventory
   def getItem(itemName: String): Option[Item] = ???
   
   def dropItem(item: Item): Unit = ???
@@ -40,6 +41,6 @@ object Room {
       Item(lines.next,lines.next)
     }
     val exits = lines.next.split(",").map(_.trim.toInt)
-    new Room(number,name,desc,items,exits)
+    new Room(number,name,desc,items,exits) //I get the error: Next on empty iterator. If statement gives an error because it needs an else
   }
 }
