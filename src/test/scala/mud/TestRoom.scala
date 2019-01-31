@@ -23,7 +23,7 @@ This would be the description of the first room.
 Exits: North, East
 Items: sword, chair
 """
-    assertEquals(properDescription, room.getDescription)
+    assertEquals(properDescription, room.description)
   }
   
   @Test def testGetExit: Unit = {

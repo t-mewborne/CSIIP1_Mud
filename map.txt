@@ -1,5 +1,4 @@
-3
-0
+1
 CSI 257
 A dimly lit room with the glow of monitors. A sense of oppression lingers in the air.
 2
@@ -7,4 +6,4 @@ chair
 Something to sit on.
 computer
 This is your tool for world domination.
--1,1,-1,-1,-1,-1
+-1,0,-1,-1,-1,-1

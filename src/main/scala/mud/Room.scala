@@ -1,7 +1,6 @@
 package mud
 
 class Room (
-    number: Int,
     name:String,
     desc:String,
     private var items:List[Item],
@@ -10,15 +9,40 @@ class Room (
   def getName(): String = name
   
   def description(): String = desc
+    
+  def getExit(dir: Int): Option[Room] = if(exits(dir) == -1) None else Some(Room.rooms(exits(dir)))
   
-  def getNumber(): Int = number
-  
-  def getExit(dir: Int): Option[Int] = if(exits(dir) == -1) None else Some(exits(dir))
+  def printExits(): String = {
+    var possibleExits = "\nPossible Exit(s): "
+    if (exits(0) != -1) possibleExits += "North, "
+    if (exits(1) != -1) possibleExits += "South, "
+    if (exits(2) != -1) possibleExits += "East, "
+    if (exits(3) != -1) possibleExits += "West, "
+    if (exits(4) != -1) possibleExits += "Up, "
+    if (exits(5) != -1) possibleExits += "Down"
+    
+    var possibleExitsLength = possibleExits.length
+    if (possibleExits(possibleExitsLength-2) == ',') possibleExits = possibleExits.substring(0, possibleExitsLength-2)
+    
+    possibleExits.trim
+  }
   
   //Pick if an item (IF IT EXISTS) from a room. addToInventory (class Player) will use this to add the item to a player's inventory
-  def getItem(itemName: String): Option[Item] = ???
+  def getItem(itemName: String): Option[Item] = {
+    val item = items.find(_.name == itemName)
+    item match {
+      case(None) => None
+      case(Some(i)) => items = items.dropWhile(_.name == itemName)
+    }
+    item
+  }
   
-  def dropItem(item: Item): Unit = ???
+  def dropItem(item: Item): Unit = items = item :: items
+  
+  def itemList():String={
+    if (items.length > 0) "Item(s) in room:\n"+ items.map(item => "\t" + item.name.capitalize + " - " + item.desc).mkString("\n")
+    else "Item(s) in room: None"
+  }
 
 }
 
@@ -34,13 +58,12 @@ object Room {
   }
   
   def readRoom(lines: Iterator[String]):Room={
-    val number = lines.next.trim.toInt
     val name = lines.next
     val desc = lines.next
     val items = List.fill(lines.next().trim.toInt){
       Item(lines.next,lines.next)
     }
     val exits = lines.next.split(",").map(_.trim.toInt)
-    new Room(number,name,desc,items,exits) //I get the error: Next on empty iterator. If statement gives an error because it needs an else
+    new Room(name,desc,items,exits) //I get the error: Next on empty iterator. If statement gives an error because it needs an else
   }
 }
