@@ -9,12 +9,12 @@ class Player (
   def currentLocation():Room = location
     
   def processCommand(command: String): Unit = {
-    	if (command == "n" || command =="north") if (location.getExit(0) == None) println("You cannot go North.") else move("n")
-	    else if (command == "s" || command =="south") if (location.getExit(1) == None) println("You cannot go South.") else move("s")
-	    else if (command == "e" || command =="east") if (location.getExit(2) == None) println("You cannot go East.") else move("e")
-	    else if (command == "w" || command =="west") if (location.getExit(3) == None) println("You cannot go West.") else move("w")
-	    else if (command == "u" || command =="up") if (location.getExit(4) == None) println("You cannot go Up.") else move("u")
-	    else if (command == "d" || command =="down") if (location.getExit(5) == None) println("You cannot go Down.") else move("d")
+    	if (command == "n" || command =="north") if (location.getExit(0) == None) println("\nYou cannot go North.") else move("n")
+	    else if (command == "s" || command =="south") if (location.getExit(1) == None) println("\nYou cannot go South.") else move("s")
+	    else if (command == "e" || command =="east") if (location.getExit(2) == None) println("\nYou cannot go East.") else move("e")
+	    else if (command == "w" || command =="west") if (location.getExit(3) == None) println("\nYou cannot go West.") else move("w")
+	    else if (command == "u" || command =="up") if (location.getExit(4) == None) println("\nYou cannot go Up.") else move("u")
+	    else if (command == "d" || command =="down") if (location.getExit(5) == None) println("\nYou cannot go Down.") else move("d")
 	    else if (command == "look"){
 	      println(location.description)
   	    println(location.itemList)
@@ -25,17 +25,17 @@ class Player (
 	      var getSplit = command.split(" ") //Split get command at the space (helps avoid typo errors)
 	      var itemToGet = location.getItem(getSplit(1))
 	      itemToGet match {
-	        case None => println("That item is not in the room. Current " + location.itemList)
+	        case None => println("I do not see that item in the room. Current " + location.itemList) //List current room item list
 	        case Some(i) => addToInventory(i)
 	      }
-	      println("\n"+inventoryListing+"\n"+location.itemList)
+	      println("\n"+inventoryListing+"\n"+location.itemList) //Print your current inventory
 	    }
     	else if (command.startsWith("drop")){
 	      var dropSplit = command.split(" ") //Split get command at the space
 	      var itemToDrop = getFromInventory(dropSplit(1))
 	      println(itemToDrop)
 	      itemToDrop match {
-	        case None => println("You do not have that item. Item(s) you have:\n" + inventoryListing)
+	        case None => println("I could not find that item in your inventory. Item(s) you have:\n" + inventoryListing)
 	        case Some(i) => {
 	          getFromInventory(itemToDrop.toString)
 	          location.dropItem(i)
@@ -58,7 +58,7 @@ class Player (
 	      println("\"help\" --------- Returns a list of possible commands.")
 	      println("\"exit\" --------- Quit the game :(")
 	    }
-    		else println("Please enter a valid command. Type \"help\" for a list of valid commands.")
+    		else println("\nI don't know what \""+command+"\" means! Please enter a valid command. Type \"help\" for a list of valid commands.")
   }
   
   //Pull an item out of the inventory and return if that item exists
