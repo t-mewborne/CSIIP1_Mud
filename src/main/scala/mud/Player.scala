@@ -92,10 +92,19 @@ class Player (
    if (dir =="d") location = location.getExit(5).get
    println("\n" + location.getName) //Print the name of the room
    println(location.description) //Print the description of the new room
-   println(location.itemList) //Print the items currently in the new rooms
+   println("\n" + location.itemList) //Print the items currently in the new rooms
+   println("\n" + location.printExits) //Print the possible exits
   }
 }
 
-/* Questions:
- * Not sure how to manipulate item lists Option[Item]
+/* Format of the map.txt file:
+ * 1 Number of rooms
+ * 2 Room 1 Name
+ * 3 Room 1 Description
+ * 4 Room 1 Quantity of items
+ * 5 Room 1 Item 1 Name
+ * 6 Room 1 Item 1 Description [Repeat 5 and 6 for every item]
+ * 7 Room 1 Possible Exits (n,s,e,w,u,d) -1 indicates there is not an exit, and number >=0 indicates what room is in that direction
+ * Repeat 2-7 Until all rooms have been filled
+ * Program will not work if the number of rooms is not correct
  */

@@ -21,8 +21,8 @@ class Room (
     if (exits(4) != -1) possibleExits += "Up, "
     if (exits(5) != -1) possibleExits += "Down"
     
-    var possibleExitsLength = possibleExits.length
-    if (possibleExits(possibleExitsLength-2) == ',') possibleExits = possibleExits.substring(0, possibleExitsLength-2)
+    var possibleExitsLength = possibleExits.length - 2 //The length of the string without the comma
+    if (possibleExits(possibleExitsLength) == ',') possibleExits = possibleExits.substring(0, possibleExitsLength)
     
     possibleExits.trim
   }

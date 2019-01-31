@@ -13,7 +13,7 @@ object Main {
 	  println("\n" + player1.currentLocation.printExits) //Print the possible exits
 	  do {  
 	    input = readLine("\n=> ").toLowerCase.trim
-	    if (input == "quit" || input == "q" || input == "exit" || input == "e") input = "exit"
+	    if (input == "quit" || input == "q" || input == "exit") input = "exit" //"e" cannot be used because "e" is used for east
 	    else player1.processCommand(input)
 	  } while (input != "exit")
 	    println("k.")

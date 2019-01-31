@@ -1,9 +1,97 @@
-1
-CSI 257
-A dimly lit room with the glow of monitors. A sense of oppression lingers in the air.
+10
+Master Bedroom
+A room full of furniture. The bed is not made, the television is flickering with static. 
 2
 chair
 Something to sit on.
-computer
-This is your tool for world domination.
--1,0,-1,-1,-1,-1
+blanket
+Something to keep you warm.
+-1,7,-1,1,-1,-1
+Hallway
+Used to connect multiple rooms together.
+0
+4,3,0,2,-1,-1
+Twin Bedroom
+A room that used to be full of joy, an eerie feeling overwhelms you. You feel like you are being watched.
+1
+old stuffed animal
+An item used to comfort children. This particular item is torn and missing an eye.
+-1,5,1,-1,-1,-1
+Bedroom
+A room with a bed, perfectly made. Unfolded clothing sits in a hamper on top of the bed.
+1
+phone
+A communication device.
+1,-1,-1,5,6,-1
+Kitchen
+A room with items used for cooking. A pot sits on the stove, the burner still emitting a flame.
+1
+pan
+An item for cooking things
+11,1,8,10,-1,-1
+Bathroom
+A room full of empty soap bottles
+2
+soap
+An item used for cleaning
+towel
+an item used for drying
+2,-1,3,-1,-1,-1
+Loft
+An area for children to play.
+1
+pillow
+An item for a comfortable night's sleep.
+-1,-1,-1,-1,-1,3
+Master Bathroom
+A room full of empty soap bottles and dirty laundry
+2
+soap
+An item used for cleaning
+towel
+an item used for drying
+0,-1,-1,-1,-1,-1,-1
+Garden
+An outdoor area filled with dead plants. A chill runs down your spine, and you can't tell if it is the cold or a presence lurking nearby.
+1
+rake
+An item used for sorting leaves
+9,-1,-1,4,-1,-1
+Pool
+A hole in the ground, no longer filled with water. A diving board hangs over the empty pool and seems to move up and down ever so slightly.
+2
+noodle
+A flotation device
+ball
+An item used to toss around
+-1,8,-1,-1,-1,-1
+Dining room
+A room with a table, set for a meal.
+2
+plate
+An item to eat from.
+knife
+An item to cut things.
+12,-1,4,-1,-1,-1
+Living Room
+A family area, complete with a couch, 2 chairs, and a television.
+1
+blanket
+An item used to keep you warm
+-1,-4,-1,12,-1,-1
+Hallway
+Used to connect multiple rooms together.
+0
+-1,10,11,13,14,-1
+Home Theatre
+A dark room with many chairs and (previously expensive, but now obsolete) equipmnet.
+1
+folder
+An item used to hold papers.
+-1,-1,12,-1,-1,-1
+Attic
+A room filled with items being stored for potential future use.
+1
+string lights
+An item typically used during the holidays to light up your house.
+-1,-1,-1,-1,-1,14
