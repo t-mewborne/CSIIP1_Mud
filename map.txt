@@ -6,7 +6,7 @@ chair
 Something to sit on.
 blanket
 Something to keep you warm.
--1,7,-1,1,-1,-1
+-1,7,-1,1,-1,-1  ---Change these values to strings (which are keywords for a map, NO SPACES!!)
 Hallway
 Used to connect multiple rooms together.
 0

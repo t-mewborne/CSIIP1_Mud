@@ -49,7 +49,7 @@ class Room (
 object Room {
   val rooms = readRooms()
   
-  def readRooms(): Array[Room] = {
+  def readRooms(): Array[Room] = {  //readrooms(): Map[String,Room]
     val source = scala.io.Source.fromFile("map.txt")
     val lines = source.getLines()
     val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines))
