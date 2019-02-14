@@ -49,7 +49,7 @@ class Room (
 object Room {
   val rooms = readRooms()
   
-  def readRooms(): Array[Room] = {  //readrooms(): Map[String,Room]
+  def readRooms(): Map[String,Room] = { //TODO Fix all of the errors created by this line
     val source = scala.io.Source.fromFile("map.txt")
     val lines = source.getLines()
     val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines))
@@ -64,6 +64,6 @@ object Room {
       Item(lines.next,lines.next)
     }
     val exits = lines.next.split(",").map(_.trim.toInt)
-    new Room(name,desc,items,exits) //I get the error: Next on empty iterator. If statement gives an error because it needs an else
+    new Room(name,desc,items,exits)
   }
 }
