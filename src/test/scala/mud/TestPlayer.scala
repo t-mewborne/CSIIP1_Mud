@@ -9,7 +9,7 @@ class TestPlayer {
   
   @Before def getRoom(): Unit = {
     sword = Item("sword", "A long pointy thing to slice and dice.")
-    player = new Player("test", Room.rooms(0), List(sword))
+    player = new Player("test", Room.rooms("mbr"), List(sword))
   }
   
   @Test def testGetFromInventory: Unit = {

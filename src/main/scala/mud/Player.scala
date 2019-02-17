@@ -16,34 +16,32 @@ class Player (
 	    else if (command == "u" || command =="up") if (location.getExit(4) == None) println("\nYou cannot go Up.") else move("u")
 	    else if (command == "d" || command =="down") if (location.getExit(5) == None) println("\nYou cannot go Down.") else move("d")
 	    else if (command == "look"){
-	      println(location.description)
-  	    println(location.itemList)
-	      println(location.printExits)
+	      println(location.description +"\n")
+  	    println(location.itemList +"\n")
+	      println(location.printExits +"\n")
 	    }
 	    else if (command == "inv" || command == "inventory") println(inventoryListing())
 	    else if (command.startsWith("get")){
-	      var getSplit = command.split(" ") //Split get command at the space (helps avoid typo errors)
+	      var getSplit = command.split(" ") //Split get command at the space
 	      var itemToGet = location.getItem(getSplit(1))
 	      itemToGet match {
 	        case None => println("I do not see that item in the room. Current " + location.itemList) //List current room item list
 	        case Some(i) => addToInventory(i)
+	        println("Picked up " + getSplit(1))
 	      }
-	      println("\n"+inventoryListing+"\n"+location.itemList) //Print your current inventory
 	    }
     	else if (command.startsWith("drop")){
-	      var dropSplit = command.split(" ") //Split get command at the space
+	      var dropSplit = command.split(" ") //Split drop command at the space
 	      var itemToDrop = getFromInventory(dropSplit(1))
-	      println(itemToDrop)
 	      itemToDrop match {
-	        case None => println("I could not find that item in your inventory. Item(s) you have:\n" + inventoryListing)
+	        case None => println("I could not find that item in your " + inventoryListing)
 	        case Some(i) => {
 	          getFromInventory(itemToDrop.toString)
 	          location.dropItem(i)
+	          println("Dropped " + dropSplit(1))
 	        }
 	      }
-	      println("\n"+inventoryListing+"\n"+location.itemList)
 	    }
-	    //else If dropItem (Create another input command to ask which item to drop)
 	    else if (command == "help"){
 	      println("\n\"n\" ------------ Move North")
 	      println("\"s\" ------------ Move South")
@@ -58,7 +56,7 @@ class Player (
 	      println("\"help\" --------- Returns a list of possible commands.")
 	      println("\"exit\" --------- Quit the game :(")
 	    }
-    		else println("\nI don't know what \""+command+"\" means! Please enter a valid command. Type \"help\" for a list of valid commands.")
+    		else println("\nI don't know what \""+command+"\" means! Please enter a valid command. (Type \"help\" for a list of valid commands)")
   }
   
   //Pull an item out of the inventory and return if that item exists
