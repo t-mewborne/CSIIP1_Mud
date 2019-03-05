@@ -1,10 +1,13 @@
 package mud
 
+import akka.actor.Actor
+import akka.actor.ActorRef
+
 class Player (
     name:String,
     private var location:Room,
     private var inventory:List[Item])
-    {
+    extends Actor{
   
   def currentLocation():Room = location
     
@@ -80,7 +83,7 @@ class Player (
   }
 
   
-  //Move the player in a particular direction if possible. (n[0],s[1],e[2],w[3],u[4],d[5]) If possible determined in main method.
+  //Move the player in a particular direction. (n[0],s[1],e[2],w[3],u[4],d[5])
   def move(dir: String): Unit = {
    if (dir =="n") location = location.getExit(0).get
    if (dir =="s") location = location.getExit(1).get
@@ -95,6 +98,11 @@ class Player (
   }
 }
 
+object Player{
+  case class PrintMessage(message:String)
+  case class TakeExit(optRoom:Option[ActorRef])
+  case class TakeItem(optItem:Option[Item])
+}
 /* Format of the map.txt file:
  * 1 Number of rooms
  * 2 Room 1 Name

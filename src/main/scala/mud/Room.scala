@@ -1,18 +1,38 @@
 package mud
 
 import collection.mutable.Buffer
+import akka.actor.Actor
+import akka.actor.ActorRef
 
 class Room (
     name:String,
     desc:String,
     private var items:List[Item],
-    exits: Buffer[String]) {
+    exitKeys: Array[String]) extends Actor{
+  
+  import Room._
+  
+  private var exits: Array[Option[ActorRef]] = null
+  
+  def receive = {
+    case LinkExits(roomsMap)=> 
+      exits = exitKeys.map(keyword => roomsMap.get(keyword))
+    case GetDescription => 
+      sender ! Player.PrintMessage(description())
+    case GetExit(dir) =>
+      sender ! Player.TakeExit(getExit(dir))
+    case GetItem(itemName) =>
+      sender ! Player.TakeItem(getItem(itemName))
+    case DropItem(item) =>
+      dropItem(item)
+    case m => println("Room recieved unknown message: " + m)
+  }
   
   def getName(): String = name
   
   def description(): String = desc
     
-  def getExit(dir: Int): Option[Room] = if(exits(dir) == "None") None else Some(Room.rooms(exits(dir)))
+  def getExit(dir: Int): Option[ActorRef] = exits(dir) //if(exits(dir) == "None") None else Some(ActorRef(exits(dir)))
   
   def printExits(): String = {
     var possibleExits = "\nPossible Exit(s): "
@@ -46,24 +66,9 @@ class Room (
 }
 
 object Room {
-  val rooms = readRooms()
-  
-  def readRooms(): Map[String,Room] = {
-    val source = scala.io.Source.fromFile("map.txt")
-    val lines = source.getLines()
-    val rooms = (lines.map(_.trim -> readRoom(lines))).toMap
-    source.close()
-    rooms
-  }
-  
-  def readRoom(lines: Iterator[String]):Room={
-    val name = lines.next
-    val desc = lines.next
-    val items = List.fill(lines.next().trim.toInt){
-      Item(lines.next,lines.next)
-    }
-    val exits = lines.next.split(",").map(_.trim).toBuffer
-    //val uselessVal = lines.next() //TODO Find a better way of doing this, this allows me to space out each room in the map.txt file
-    new Room(name,desc,items,exits)
-  }
+  case class LinkExits(roomsMap: Map[String,ActorRef])
+  case object GetDescription
+  case class GetExit(dir: Int)
+  case class GetItem(itemName:String)
+  case class DropItem(item:Item)
 }
