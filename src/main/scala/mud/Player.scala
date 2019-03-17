@@ -2,12 +2,31 @@ package mud
 
 import akka.actor.Actor
 import akka.actor.ActorRef
+import java.io.PrintStream
+import java.io.BufferedReader
 
 class Player (
     name:String,
     private var location:Room,
-    private var inventory:List[Item])
+    private var inventory:List[Item],
+    in: BufferedReader, 
+    out: PrintStream)
     extends Actor{
+
+  import Player._
+
+  def receive = {
+    case CheckInput =>
+      if (in.ready()) {
+        val input = in.readLine()
+        processCommand(input)
+      }
+    case PrintMessage(message) =>
+      out.println(message)
+    case TakeExit(optRoom) => //TODO
+    case TakeItem(optItem) => getFromInventory(optItem)
+    case m => println("Player recieved unknown message: " + m)
+  }
   
   def currentLocation():Room = location
     
@@ -45,21 +64,31 @@ class Player (
 	        }
 	      }
 	    }
+    	else if (command.startsWith("yell")) { //TODO possible bug- this will still work with commands w/o spaces (ie yellow)
+    	  var yellSplit = command.split(" ")
+    	  context.parent ! PlayerManager.SendMessageToAll(name+" said "+yellSplit(1))
+    	}
+    	else if (command.startsWith("whisper")) println(command + " is not a valid command yet.")
+    	else if (command == "players") println(command + " is not a valid command yet.")
+    	else if (command == "exit") println("Command Unavailable.")
 	    else if (command == "help"){
-	      println("\n\"n\" ------------ Move North")
-	      println("\"s\" ------------ Move South")
-	      println("\"e\" ------------ Move East")
-	      println("\"w\" ------------ Move West")
-	      println("\"u\" ------------ Move Up")
-	      println("\"d\" ------------ Move Down")
-	      println("\"look\" --------- Reprint the description, items, and possible exits of the current room")
-	      println("\"inv\" ---------- Print what is currently in your inventory")
-	      println("\"get (item)\" --- Allows you to pick up the specified item in a room and add it to your inventory")
-	      println("\"drop (item)\" -- Allows you to drop a specified item from your inventory into the current room.")
-	      println("\"help\" --------- Returns a list of possible commands.")
-	      println("\"exit\" --------- Quit the game :(")
+	      println("\n\"n\" ------------------------- Move North")
+	      println("\"s\" --------------------------- Move South")
+	      println("\"e\" --------------------------- Move East")
+	      println("\"w\" --------------------------- Move West")
+	      println("\"u\" --------------------------- Move Up")
+	      println("\"d\" --------------------------- Move Down")
+	      println("\"look\" ------------------------ Reprint the description, items, and possible exits of the current room")
+	      println("\"inv\" ------------------------- Print what is currently in your inventory")
+	      println("\"get (item)\" ------------------ Pick up a specified item in a room and add it to your inventory")
+	      println("\"drop (item)\" ----------------- Drop a specified item from your inventory into the current room.")
+	      println("\"yell (message)\"--------------- Send a message to all players (does not work yet)") //TODO
+	      println("\"whisper (player) (message)\" -- Send a message to a specific player (does not work yet)") //TODO
+	      println("\"players\"---------------------- Print players in game and their locations (does not work yet)") //TODO
+	      println("\"help\" ------------------------ A list of possible commands")
+	      println("\"exit\" ------------------------ Quit the game :(")
 	    }
-    		else println("\nI don't know what \""+command+"\" means! Please enter a valid command. (Type \"help\" for a list of valid commands)")
+    	else println("\nI don't know what \""+command+"\" means. Please enter a valid command. (Type \"help\" for a list of valid commands)")
   }
   
   //Pull an item out of the inventory and return if that item exists
@@ -102,15 +131,15 @@ object Player{
   case class PrintMessage(message:String)
   case class TakeExit(optRoom:Option[ActorRef])
   case class TakeItem(optItem:Option[Item])
+  case object CheckInput
 }
 /* Format of the map.txt file:
- * 1 Number of rooms
+ * 1 Room 1 Key
  * 2 Room 1 Name
  * 3 Room 1 Description
  * 4 Room 1 Quantity of items
  * 5 Room 1 Item 1 Name
  * 6 Room 1 Item 1 Description [Repeat 5 and 6 for every item]
- * 7 Room 1 Possible Exits (n,s,e,w,u,d) -1 indicates there is not an exit, and number >=0 indicates what room is in that direction
- * Repeat 2-7 Until all rooms have been filled
- * Program will not work if the number of rooms is not correct
+ * 7 Room 1 Possible Exits (n,s,e,w,u,d) None indicates there is not an exit, anything else indicates the key of the room in that direction
+ * Repeat 2-7 for each room
  */
