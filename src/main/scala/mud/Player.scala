@@ -38,12 +38,13 @@ class Player (
 	    else if (command == "u" || command =="up") if (location.getExit(4) == None) println("\nYou cannot go Up.") else move("u")
 	    else if (command == "d" || command =="down") if (location.getExit(5) == None) println("\nYou cannot go Down.") else move("d")
 	    else if (command == "look"){
+	      println(location.getName+"\n")
 	      println(location.description +"\n")
   	    println(location.itemList +"\n")
 	      println(location.printExits +"\n")
 	    }
 	    else if (command == "inv" || command == "inventory") println(inventoryListing())
-	    else if (command.startsWith("get")){
+	    else if (command.startsWith("get") && command(3) == " "){
 	      var getSplit = command.split(" ") //Split get command at the space
 	      var itemToGet = location.getItem(getSplit(1))
 	      itemToGet match {
@@ -52,7 +53,7 @@ class Player (
 	        println("Picked up " + getSplit(1))
 	      }
 	    }
-    	else if (command.startsWith("drop")){
+    	else if (command.startsWith("drop") && command(4) == " "){
 	      var dropSplit = command.split(" ") //Split drop command at the space
 	      var itemToDrop = getFromInventory(dropSplit(1))
 	      itemToDrop match {
@@ -64,7 +65,7 @@ class Player (
 	        }
 	      }
 	    }
-    	else if (command.startsWith("yell")) { //TODO possible bug- this will still work with commands w/o spaces (ie yellow)
+    	else if (command.startsWith("yell") && command(4) == " ") { //TODO possible bug- this will still work with commands w/o spaces (ie yellow)
     	  var yellSplit = command.split(" ")
     	  context.parent ! PlayerManager.SendMessageToAll(name+" said "+yellSplit(1))
     	}
