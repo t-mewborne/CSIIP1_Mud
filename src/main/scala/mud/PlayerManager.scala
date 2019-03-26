@@ -16,7 +16,9 @@ class PlayerManager extends Actor{
       for (child <- context.children) child ! Player.CheckInput
     case NewPlayer(in, out, name, sock) =>
       if(context.children.exists(_.path.name == name)) {
-        out.println("That name is already taken. Please choose a different name.\n")
+        out.println("\nThat name is already taken. Please try again with a different name.\n")
+        out.close()
+        in.close()
         sock.close()
       } else {
         val player = context.actorOf(Props(new Player(name, in, out, sock)), name)
@@ -29,13 +31,13 @@ class PlayerManager extends Actor{
       for (child <- context.children) child ! Player.PrintMessageRoom(message, room)
     case TellPlayer(sendingPlayer,receivingPlayer,message)=>
       if(!context.children.exists(_.path.name == receivingPlayer)) {
-        sender ! Player.PrintMessage("\nPlayer \"" + receivingPlayer + "\" does not exist.\n")
+        sender ! Player.PrintMessage("\nPlayer \"" + receivingPlayer.capitalize + "\" does not exist.\n")
       }
       else {
         for (child <- context.children) {
           if (child.path.name == receivingPlayer) {
-            child ! Player.PrintMessage("\n\n" +sendingPlayer.capitalize + " told you \"" + message + "\"\n")
-            sender ! Player.PrintMessage("\n\"" + message + "\" sent to " + receivingPlayer + "\n")
+            child ! Player.PrintMessage("\n\n" +sendingPlayer.capitalize + " sent you a message: \"" + message + "\"\n")
+            sender ! Player.PrintMessage("\n\"" + message + "\" sent to " + receivingPlayer.capitalize + "\n")
           }
         }
       }

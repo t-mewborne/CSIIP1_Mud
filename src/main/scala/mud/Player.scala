@@ -35,6 +35,7 @@ class Player (
     case TakeExit(optRoom) => //TODO
       if (optRoom == None) out.println("\nYou cannot go this way.") else {
         location = optRoom.get
+        out.println()
         location ! Room.GetDetails
       }
     case TakeItem(optItem) =>
@@ -90,11 +91,15 @@ class Player (
     	}
     	else if (command == "players") out.println(command + " is not a valid command yet.")
     	else if (command == "exit") {
+    	  out.println("\nGoodbye!\n")
     	  sock.close()
-    	  context.stop(self) //Kill the actor
+    	  out.close()
+    	  in.close()
+    	  context.stop(self) //Kill the actor so people cannot send messages to dead actors
+    	  //TODO Add all items of this player into the exit room
     	}
 	    else if (command == "help"){
-	      out.println("\"\nn\" --------------------------- Move North")
+	      out.println("\n\"n\" ------------------------- Move North")
 	      out.println("\"s\" --------------------------- Move South")
 	      out.println("\"e\" --------------------------- Move East")
 	      out.println("\"w\" --------------------------- Move West")
@@ -104,8 +109,8 @@ class Player (
 	      out.println("\"inv\" ------------------------- Print what is currently in your inventory")
 	      out.println("\"get (item)\" ------------------ Pick up a specified item in a room and add it to your inventory")
 	      out.println("\"drop (item)\" ----------------- Drop a specified item from your inventory into the current room.")
-	      out.println("\"tell (message)\"--------------- Send a message to all players")
-	      out.println("\"whisper (player) (message)\" -- Send a message to a specific player (does not work yet)") //TODO
+	      out.println("\"say (message)\"---------------- Send a message to all players")
+	      out.println("\"tell (player) (message)\" ----- Send a message to a specific player")
 	      out.println("\"players\"---------------------- Print players in game and their locations (does not work yet)") //TODO
 	      out.println("\"help\" ------------------------ A list of possible commands")
 	      out.println("\"exit\" ------------------------ Quit the game :(")
