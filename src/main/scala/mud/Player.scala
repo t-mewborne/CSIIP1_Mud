@@ -25,17 +25,21 @@ class Player (
       if (in.ready()) {
         val input = in.readLine().trim.toLowerCase
         processCommand(input)
-        //out.print("=> ")
       }
     case PrintMessage(message) =>
       out.println(message)
       out.print("=> ")
     case PrintMessageRoom(message, room)=>
       if (location == room) out.print("\n\n" + message + "\n\n=>")
-    case TakeExit(optRoom) => //TODO
-      if (optRoom == None) out.println("\nYou cannot go this way.") else {
+    case TakeExit(optRoom) =>
+      if (optRoom == None) out.print("\nYou cannot go this way.\n\n=>") 
+      else {
+        location ! Room.RemovePlayer(name)
+        context.parent ! PlayerManager.TellRoom(name.capitalize + " has left the room.", location)
         location = optRoom.get
         out.println()
+        location ! Room.AddPlayer(name)
+        context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
         location ! Room.GetDetails
       }
     case TakeItem(optItem) =>
@@ -43,13 +47,16 @@ class Player (
         case None => out.println("I do not see that item in the room.") //List current room item list
         case Some(i) =>
           addToInventory(i)
-          out.println("Picked up " + i.name + "\n\n=>")
+          out.print("\nPicked up \"" + i.name.capitalize + "\"\n\n=>")
+          context.parent ! PlayerManager.TellRoom(name.capitalize + " picked up \"" + i.name.capitalize + "\"",location)
       }
     case StartingRoom(room) =>
       location = room
+      location ! Room.AddPlayer(name)
       out.println("Welcome " + name.capitalize + "!")
+      context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
       location ! Room.GetDetails
-    case m => println("Player recieved unknown message: " + m)
+    case m => out.println("Player recieved unknown message: " + m)
   }
   
   //def currentLocation():Room = location
@@ -61,22 +68,26 @@ class Player (
 	    else if (command == "w" || command =="west") location ! Room.GetExit(3)
 	    else if (command == "u" || command =="up") location ! Room.GetExit(4)
 	    else if (command == "d" || command =="down") location ! Room.GetExit(5)
-	    else if (command == "look") location ! Room.GetDetails
-	    else if (command == "inv" || command == "inventory") out.print(inventoryListing() +  "\n\n=>")
+	    else if (command == "look") {
+	      out.println()
+	      location ! Room.GetDetails
+	    }
+	    else if (command == "inv" || command == "inventory") out.print("\n" + inventoryListing() +  "\n\n=>")
 	    else if (command.startsWith("get") && command(3) == ' '){
-	     var getSplit = command.split(" ") //Split get command at the space
-	     location ! Room.GetItem(getSplit(1))
-	      out.print("\n\n=>")
+	     var getSplit = command.split(" ")
+	     location ! Room.GetItem(getSplit.drop(1).mkString(" "))
 	    }
     	else if (command.startsWith("drop") && command(4) == ' '){
-	      var dropSplit = command.split(" ") //Split drop coyell (message)"--------------- Send a message to all players (does not work yet)mmand at the space
-	      var itemToDrop = getFromInventory(dropSplit(1))
+	      var dropSplit = command.split(" ")
+	      var itemName = dropSplit.drop(1).mkString(" ")
+	      var itemToDrop = getFromInventory(itemName)
 	      itemToDrop match {
 	        case None => out.println("I could not find that item in your " + inventoryListing)
 	        case Some(i) => {
 	          getFromInventory(i.name)
 	          location ! Room.DropItem(i)
-	          out.println("Dropped " + dropSplit(1))
+	          out.print("\nDropped \"" + itemName.capitalize + "\"")
+	          context.parent ! PlayerManager.TellRoom(name.capitalize + " dropped \"" + i.name.capitalize + "\"",location)
 	        }
 	        out.print("\n\n=>")
 	      }
@@ -84,34 +95,41 @@ class Player (
     	else if (command.startsWith("say") && command(3) == ' ') {
     	  var saySplit = command.split(" ")
     	  context.parent ! PlayerManager.TellRoom(name.capitalize+" said \""+saySplit.drop(1).mkString(" ") + "\"", location)
+    	  out.println("\nYou said \"" + saySplit.drop(1).mkString(" ") + "\"")
+    	  out.print("\n=> ")
     	}
     	else if (command.startsWith("tell") && command(4) == ' ') {
     	  var tellSplit = command.split(" ")
     	  context.parent ! PlayerManager.TellPlayer(name, tellSplit(1).toLowerCase, tellSplit.drop(2).mkString(" "))
     	}
-    	else if (command == "players") out.println(command + " is not a valid command yet.")
+    	else if (command == "players") {
+    	  out.println()
+    	  context.parent ! PlayerManager.PrintPlayers
+    	}
     	else if (command == "exit") {
-    	  out.println("\nGoodbye!\n")
+    	  //TODO Add all items of this player into the exit room
+    		out.println("\nGoodbye!\n")
+    	  location ! Room.RemovePlayer(name) //Remove the player from the room so their ghost does not remain
+    	  context.parent ! PlayerManager.TellRoom(name.capitalize + " has left the game.", location)
     	  sock.close()
     	  out.close()
     	  in.close()
     	  context.stop(self) //Kill the actor so people cannot send messages to dead actors
-    	  //TODO Add all items of this player into the exit room
     	}
 	    else if (command == "help"){
-	      out.println("\n\"n\" ------------------------- Move North")
+	      out.println("\n\"n\" --------------------------- Move North")
 	      out.println("\"s\" --------------------------- Move South")
 	      out.println("\"e\" --------------------------- Move East")
 	      out.println("\"w\" --------------------------- Move West")
 	      out.println("\"u\" --------------------------- Move Up")
 	      out.println("\"d\" --------------------------- Move Down")
-	      out.println("\"look\" ------------------------ Reprint the description, items, and possible exits of the current room")
+	      out.println("\"look\" ------------------------ Reprint the description, items, possible exits, and players in the current room")
 	      out.println("\"inv\" ------------------------- Print what is currently in your inventory")
 	      out.println("\"get (item)\" ------------------ Pick up a specified item in a room and add it to your inventory")
 	      out.println("\"drop (item)\" ----------------- Drop a specified item from your inventory into the current room.")
 	      out.println("\"say (message)\"---------------- Send a message to all players")
 	      out.println("\"tell (player) (message)\" ----- Send a message to a specific player")
-	      out.println("\"players\"---------------------- Print players in game and their locations (does not work yet)") //TODO
+	      out.println("\"players\"---------------------- Print players in game")
 	      out.println("\"help\" ------------------------ A list of possible commands")
 	      out.println("\"exit\" ------------------------ Quit the game :(")
 	      out.print("\n=>")

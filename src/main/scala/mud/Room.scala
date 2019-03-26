@@ -12,19 +12,25 @@ class Room (
   
   import Room._
   
+  private var playerList: List[String] = Nil
+  
   private var exits: Array[Option[ActorRef]] = null
   
   def receive = {
     case LinkExits(roomsMap)=> 
       exits = exitKeys.map(keyword => roomsMap.get(keyword))
-    case GetDetails => 
-      sender ! Player.PrintMessage(getName + "\n" + description + "\n" + itemList + "\n" + printExits + "\n")
+    case GetDetails =>
+      sender ! Player.PrintMessage(getName + "\n" + description + "\n" + itemList + "\n" + printExits + "\nPlayers: " + playerList.mkString(", ").capitalize + "\n")
     case GetExit(dir) =>
       sender ! Player.TakeExit(getExit(dir))
     case GetItem(itemName) =>
       sender ! Player.TakeItem(getItem(itemName))
     case DropItem(item) =>
       dropItem(item)
+    case AddPlayer(name) =>
+      playerList = name.capitalize :: playerList
+    case RemovePlayer(name) =>
+      playerList = playerList.filter(_ != name.capitalize)
     case m => sender ! Player.PrintMessage("Room recieved unknown message: " + m)
   }
   
@@ -71,4 +77,6 @@ object Room {
   case class GetExit(dir: Int)
   case class GetItem(itemName:String)
   case class DropItem(item:Item)
+  case class AddPlayer(name:String)
+  case class RemovePlayer(name:String)
 }
