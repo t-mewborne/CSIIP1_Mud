@@ -28,7 +28,13 @@ object Main extends App {
     Future {
       out.print("What is your name?\n\n=>")
       val name = in.readLine().trim.toLowerCase
-      playerManager ! PlayerManager.NewPlayer(in, out, name, sock)
+      if (name.contains(' ')||name.contains('/')||name.contains('\\')) { //TODO change this to an array of illegal characters
+        out.println("Your name contains an illegal character. Please try again")
+        in.close()
+        out.close()
+        sock.close()
+      }
+      else playerManager ! PlayerManager.NewPlayer(in, out, name, sock)
     }
   }
 }
