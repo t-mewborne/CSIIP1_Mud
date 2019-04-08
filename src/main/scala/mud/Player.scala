@@ -17,7 +17,7 @@ class Player (
   import Player._
 
 	private var location:ActorRef = null
-	private var inventory:List[Item] = List()
+	private var inventory:DoublyLinkedList[Item] = new DoublyLinkedList()
 
 
   def receive = {
@@ -145,14 +145,15 @@ class Player (
     val item = inventory.find(_.name == itemName)
     item match {
       case(None) => None
-      case(Some(i)) => inventory = inventory.dropWhile(_.name == itemName)
+      case(Some(i)) => inventory.remove(itemName)
     }
     item
   }
   
   
   //Add an item to your inventory that you have picked up from your room.
-  def addToInventory(item: Item): Unit = inventory = item :: inventory
+  //def addToInventory(item: Item): Unit = inventory = item :: inventory
+  def addToInventory(item: Item): Unit = inventory += item
   
   //Build a String with the contents of the inventory for printing.
   def inventoryListing(): String = {
