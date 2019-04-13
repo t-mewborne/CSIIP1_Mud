@@ -9,3 +9,7 @@ can keep if you like it.
 Code compiles and runs fine. Rooms are storedin a Map. You made exits be the Buffer, which seems like an odd 
 choice since you are never adding to or removing from the exits and that is the advantage of a Buffer. I also
 found a bug in item handling that I left two comments on.
+
+## Show Code #7 on 3/28 (4 of 4 points)
+
+Code compiles and runs as expected.
