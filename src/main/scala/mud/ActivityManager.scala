@@ -5,7 +5,7 @@ import akka.actor.ActorRef
 
 class ActivityManager extends Actor {
   import ActivityManager._
-  val PQ = new PriorityQueue[Activity]((a1, a2) => a1.when - a2.when)
+  val PQ = new PriorityQueue[Activity]((a1, a2) => a2.when - a1.when)
 
   var time = 0
 
@@ -15,11 +15,13 @@ class ActivityManager extends Actor {
         if (PQ.peek.when <= time) {
           val next = PQ.dequeue()
           next.who ! next.what
-        }
+        } 
+        //else println("Next Activity:\tWhat:" + PQ.peek.what + "\t When:" + (PQ.peek.when) + "\t\t Current Time:" + time + "\t\tWho:" + PQ.peek.who)
         time += 1
-      }
+      } else time = 0
     case Enqueue(what, when) =>
       PQ.enqueue(new Activity(what, sender, when + time))
+      //println("Activity Added:\tWhat:" + what + "\t When:" + (when+time) + "\t\t Current Time:" + time + "\t\tWho:" + sender)
     case m => sender ! Player.PrintMessage("ActivityManager recieved unknown message: " + m)
   }
 }

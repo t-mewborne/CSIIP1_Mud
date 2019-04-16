@@ -21,6 +21,7 @@ object Main extends App {
   system.scheduler.schedule(0.seconds, 0.1.seconds, activityManager, ActivityManager.CheckQueue)
   
   val NPCNames = Array("Quinn", "Travis", "Morgan", "Freddie", "Lauren", "Naudia", "Ryanna", "Kenna", "Bela", "Mark", "Ghost")
+  val NPCItems = Array("Uniwhale", "Knife", "Computer", "Sunscreen", "Salt")
   for (i <- 0 to 10) npcManager ! NPCManager.newNPC(NPCNames(i))
 
   val portNumber = 8080

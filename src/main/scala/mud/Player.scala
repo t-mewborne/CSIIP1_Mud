@@ -104,6 +104,7 @@ class Player (
     	}
     	else if (command == "players") {
     	  context.parent ! PlayerManager.PrintPlayers
+    	  Main.npcManager ! NPCManager.PrintNPCs
     	}
     	else if (command == "exit") {
     	  //TODO Add all items of this player into the exit room

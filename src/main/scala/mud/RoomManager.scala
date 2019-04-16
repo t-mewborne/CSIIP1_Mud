@@ -10,7 +10,8 @@ class RoomManager extends Actor {
   val rand = new Random
 	val rooms = readRooms()
 	for(room <- context.children) room ! Room.LinkExits(rooms)
-	import RoomManager ._
+	import RoomManager._
+	
   def receive = {
 	  case StartRoom(entity) =>
 	    entity ! Player.StartingRoom(rooms(keywords(rand.nextInt(keywords.length))))
