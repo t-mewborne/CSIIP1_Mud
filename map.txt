@@ -1,4 +1,4 @@
-15
+16
 mbr
 Master Bedroom
 A room full of furniture. The bed is not made, the television is flickering with static. 
@@ -109,4 +109,9 @@ A room filled with items being stored for potential future use.
 1
 string lights
 An item typically used during the holidays to light up your house.
-None,None,None,None,None,hly2
+None,None,None,None,vd,hly2
+vd
+Void
+An empty room with no possible escape xD
+0
+None,None,None,None,None,None

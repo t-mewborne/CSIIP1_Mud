@@ -3,14 +3,17 @@ package mud
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
+import scala.util.Random
 
 class RoomManager extends Actor {
+  var keywords:List[String]=List()
+  val rand = new Random
 	val rooms = readRooms()
 	for(room <- context.children) room ! Room.LinkExits(rooms)
 	import RoomManager ._
   def receive = {
-	  case StartRoom(player) =>
-	    player ! Player.StartingRoom(rooms("mbr"))
+	  case StartRoom(entity) =>
+	    entity ! Player.StartingRoom(rooms(keywords(rand.nextInt(keywords.length))))
     case m => sender ! Player.PrintMessage("RoomManager recieved unknown message: " + m)
   }
 
@@ -24,6 +27,7 @@ class RoomManager extends Actor {
 
   def readRoom(lines: Iterator[String]): (String, ActorRef) = {
     val keyword = lines.next
+    keywords = keyword :: keywords
     val name = lines.next
     val desc = lines.next
     val items = List.fill(lines.next.trim.toInt) {

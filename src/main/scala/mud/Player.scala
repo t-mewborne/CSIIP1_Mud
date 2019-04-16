@@ -82,7 +82,7 @@ class Player (
 	      var itemName = dropSplit.drop(1).mkString(" ")
 	      var itemToDrop = getFromInventory(itemName)
 	      itemToDrop match {
-	        case None => out.println("I could not find that item in your " + inventoryListing)
+	        case None => out.print("\nI could not find that item in your " + inventoryListing + "\n\n=>")
 	        case Some(i) => {
 	          getFromInventory(i.name)
 	          location ! Room.DropItem(i)
@@ -103,7 +103,6 @@ class Player (
     	  context.parent ! PlayerManager.TellPlayer(name, tellSplit(1).toLowerCase, tellSplit.drop(2).mkString(" "))
     	}
     	else if (command == "players") {
-    	  out.println()
     	  context.parent ! PlayerManager.PrintPlayers
     	}
     	else if (command == "exit") {
@@ -145,7 +144,8 @@ class Player (
     val item = inventory.find(_.name == itemName)
     item match {
       case(None) => None
-      case(Some(i)) => inventory.remove(itemName)
+      case(Some(i)) => 
+        inventory.remove(i)
     }
     item
   }

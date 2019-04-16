@@ -49,7 +49,8 @@ class Room (
     if (exits(4) != None) possibleExits += "Up, "
     if (exits(5) != None) possibleExits += "Down  "
     
-    possibleExits.substring(0, possibleExits.length-2).trim
+    if (possibleExits == "\nPossible Exit(s): ") "\nNo Exits :)" 
+      else possibleExits.substring(0, possibleExits.length-2).trim
   }
   
   //Pick if an item (IF IT EXISTS) from a room. addToInventory (class Player) will use this to add the item to a player's inventory

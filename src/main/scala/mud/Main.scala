@@ -15,7 +15,13 @@ object Main extends App {
   val system = ActorSystem("MudController")
   val playerManager = system.actorOf(Props[PlayerManager], "PlayerManager")
   val roomManager = system.actorOf(Props[RoomManager], "RoomManager")
+  val npcManager = system.actorOf(Props[NPCManager], "NPCManager")
+  val activityManager = system.actorOf(Props[ActivityManager], "ActivityManager")
   system.scheduler.schedule(0.seconds, 0.1.seconds, playerManager, PlayerManager.CheckAllInput)
+  system.scheduler.schedule(0.seconds, 0.1.seconds, activityManager, ActivityManager.CheckQueue)
+  
+  val NPCNames = Array("Quinn", "Travis", "Morgan", "Freddie", "Lauren", "Naudia", "Ryanna", "Kenna", "Bela", "Mark", "Ghost")
+  for (i <- 0 to 10) npcManager ! NPCManager.newNPC(NPCNames(i))
 
   val portNumber = 8080
   val ss = new ServerSocket(portNumber)
@@ -28,8 +34,8 @@ object Main extends App {
     Future {
       out.print("What is your name?\n\n=>")
       val name = in.readLine().trim.toLowerCase
-      if (name.contains(' ')||name.contains('/')||name.contains('\\')) { //TODO change this to an array of illegal characters
-        out.println("Your name contains an illegal character. Please try again")
+      if (!name.forall(x => x.isLetterOrDigit)) {
+        out.println("\nSorry, your name contains an illegal character. Please try again. \n")
         in.close()
         out.close()
         sock.close()

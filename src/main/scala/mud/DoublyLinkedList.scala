@@ -75,6 +75,16 @@ class DoublyLinkedList[A] extends mutable.Buffer[A] {
     rover.next.prev = rover.prev
     ret
   }
+  
+  def remove(s:A): A = { //Make sure to check if the item exists before calling this method
+    numElems -= 1
+    var rover = end.next
+    while (rover.data != s) rover = rover.next
+    val ret = rover.data
+    rover.prev.next = rover.next
+    rover.next.prev = rover.prev
+    ret
+  }
 
   def update(n: Int, newelem: A): Unit = {
     require(n >= 0 && n < numElems)
