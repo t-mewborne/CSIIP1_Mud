@@ -20,9 +20,9 @@ object Main extends App {
   system.scheduler.schedule(0.seconds, 0.1.seconds, playerManager, PlayerManager.CheckAllInput)
   system.scheduler.schedule(0.seconds, 0.1.seconds, activityManager, ActivityManager.CheckQueue)
   
-  val NPCNames = Array("Quinn", "Travis", "Morgan", "Freddie", "Lauren", "Naudia", "Ryanna", "Kenna", "Bela", "Mark", "Ghost")
-  val NPCItems = Array("Uniwhale", "Knife", "Computer", "Sunscreen", "Salt")
-  for (i <- 0 to 10) npcManager ! NPCManager.newNPC(NPCNames(i))
+  val NPCNames = Array("Quinn", "Travis", "Morgan", "Freddie", "Lauren", "Naudia", "Ryanna", "Kenna", "Bela", "Mark", "Ghost", "Bygoe")
+  val NPCItems = Array("Uniwhale", "Knife", "Computer", "Sunscreen", "Salt", "Gift Card", "Hammock", "Hmm", "Mario", "Hair", "Brick", "Frito")
+  for (i <- 1 until NPCNames.length) npcManager ! NPCManager.newNPC(NPCNames(i))
 
   val portNumber = 8080
   val ss = new ServerSocket(portNumber)
