@@ -4,11 +4,15 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import scala.util.Random
 
-class NPC(name: String) extends Actor {
+class NPC(name: String, 
+    item:String, 
+    itemSpec:(Int,Int)) //itemSpec tuples include (speed,damage) where speed (1-10) is the time in seconds/10 and damage (0-10) is the effectiveness of the weapon.
+    extends Actor {
 
   import NPC._
+  
   private var location: ActorRef = null
-
+  private var health = 100
   val rand = new Random
   
   def receive = {

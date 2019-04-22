@@ -18,7 +18,8 @@ class Player (
 
 	private var location:ActorRef = null
 	private var inventory:DoublyLinkedList[Item] = new DoublyLinkedList()
-
+	private var equippedItem:Option[Item] = None
+	private var health = 100
 
   def receive = {
     case CheckInput =>
@@ -73,11 +74,11 @@ class Player (
 	      location ! Room.GetDetails
 	    }
 	    else if (command == "inv" || command == "inventory") out.print("\n" + inventoryListing() +  "\n\n=>")
-	    else if (command.startsWith("get") && command(3) == ' '){
+	    else if (command.startsWith("get") && command(3) == ' ' && command.length > 4){
 	     var getSplit = command.split(" ")
 	     location ! Room.GetItem(getSplit.drop(1).mkString(" "))
 	    }
-    	else if (command.startsWith("drop") && command(4) == ' '){
+    	else if (command.startsWith("drop") && command(4) == ' ' && command.length > 4){
 	      var dropSplit = command.split(" ")
 	      var itemName = dropSplit.drop(1).mkString(" ")
 	      var itemToDrop = getFromInventory(itemName)
@@ -92,6 +93,31 @@ class Player (
 	        out.print("\n\n=>")
 	      }
 	    }
+    	else if (command.startsWith("equip") && command(5) == ' ' && command.length > 5){
+    	  var equipSplit = command.split(" ")
+	      var itemName = equipSplit.drop(1).mkString(" ")
+	      var itemToEquip = getFromInventory(itemName)
+	      itemToEquip match {
+    	    case None => out.print("\nI could not find that item in your " + inventoryListing + "\n\n=>")
+    	    case Some(i) => 
+    	      if (equippedItem == None) {
+    	        equippedItem = Some(i)
+    	      } else {
+    	        addToInventory(equippedItem.get)
+    	        equippedItem = Some(i)
+    	      }
+    	      out.print("\nEquipped \"" + i.name + "\"\n\n=>")
+    	  }
+    	}
+    	else if (command == "unequip"){
+    	  equippedItem match {
+    	    case Some(i) =>
+    	      addToInventory(i)
+    	      out.print("\nUnequipped \"" + equippedItem.get.name + "\"\n\n=>")
+    	      equippedItem = None
+    	    case None => out.print("\nYou don't have an active item.\n\n=>")
+    	  }
+    	}
     	else if (command.startsWith("say") && command(3) == ' ') {
     	  var saySplit = command.split(" ")
     	  context.parent ! PlayerManager.TellRoom(name.capitalize+" said \""+saySplit.drop(1).mkString(" ") + "\"", location)
@@ -127,6 +153,8 @@ class Player (
 	      out.println("\"inv\" ------------------------- Print what is currently in your inventory")
 	      out.println("\"get (item)\" ------------------ Pick up a specified item in a room and add it to your inventory")
 	      out.println("\"drop (item)\" ----------------- Drop a specified item from your inventory into the current room.")
+	      out.println("\"equip (item)\"----------------- Equip an item for battle")
+	      out.println("\"unequip (item)\"--------------- Unequip an item for battle")
 	      out.println("\"say (message)\"---------------- Send a message to all players")
 	      out.println("\"tell (player) (message)\" ----- Send a message to a specific player")
 	      out.println("\"players\"---------------------- Print players in game")
@@ -158,7 +186,7 @@ class Player (
   
   //Build a String with the contents of the inventory for printing.
   def inventoryListing(): String = {
-    if (inventory.length > 0) "Inventory:\n"+ inventory.map(item => "\t" + item.name.capitalize + " - " + item.desc).mkString("\n")
+    if (inventory.length > 0) "Inventory:\n"+ inventory.map(item => "\t" + item.name.capitalize + " - " + item.desc + "\n\t\tSpeed: " + item.speed + " Damage: " + item.damage).mkString("\n")
     else "Inventory: Empty"
   }
 }

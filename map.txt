@@ -5,8 +5,12 @@ A room full of furniture. The bed is not made, the television is flickering with
 2
 chair
 Something to sit on.
+6
+7
 blanket
 Something to keep you warm.
+8
+9
 None,mbh,None,hly1,None,None
 hly1
 Hallway
@@ -19,6 +23,8 @@ A room that used to be full of joy, an eerie feeling overwhelms you. You feel li
 1
 old stuffed animal
 An item used to comfort children. This particular item is torn and missing an eye.
+2
+9
 None,bth,hly1,None,None,None
 br
 Bedroom
@@ -26,6 +32,8 @@ A room with a bed, perfectly made. Unfolded clothing sits in a hamper on top of 
 1
 phone
 A communication device.
+4
+2
 hly1,None,None,bth,lft,None
 ktc
 Kitchen
@@ -33,6 +41,8 @@ A room with items used for cooking. A pot sits on the stove, the burner still em
 1
 pan
 An item for cooking things
+2
+8
 lvr,hly1,gdn,dnr,None,None
 bth
 Bathroom
@@ -40,8 +50,12 @@ A room full of empty soap bottles
 2
 soap
 An item used for cleaning
+1
+4
 towel
 an item used for drying
+7
+6
 tbr,None,br,None,None,None
 lft
 Loft
@@ -49,6 +63,8 @@ An area for children to play.
 1
 pillow
 An item for a comfortable night's sleep.
+8
+9
 None,None,None,None,None,br
 mbh
 Master Bathroom
@@ -56,8 +72,12 @@ A room full of empty soap bottles and dirty laundry
 2
 soap
 An item used for cleaning
+1
+4
 towel
 an item used for drying
+7
+6
 mbr,None,None,None,None,None,None
 gdn
 Garden
@@ -65,6 +85,8 @@ An outdoor area filled with dead plants. A chill runs down your spine, as a slig
 1
 rake
 An item used for sorting leaves
+1
+8
 pl,None,None,ktc,None,None
 pl
 Pool
@@ -72,8 +94,12 @@ A hole in the ground, no longer filled with water. A diving board bounces slight
 2
 noodle
 A flotation device
+9
+4
 ball
 An item used to toss around
+3
+2
 None,gdn,None,None,None,None
 dnr
 Dining Room
@@ -81,8 +107,12 @@ A room with a table, set for a meal.
 2
 plate
 An item to eat from.
+1
+6
 knife
 An item to cut things.
+1
+10
 hly2,None,ktc,None,None,None
 lvr
 Living Room
@@ -90,6 +120,8 @@ A family area, complete with a couch, 2 chairs, and a television.
 1
 blanket
 An item used to keep you warm
+7
+9
 None,ktc,None,hly2,None,None
 hly2
 Hallway
@@ -102,6 +134,8 @@ A dark room with many chairs and (previously expensive, but now obsolete) equipm
 1
 folder
 An item used to hold papers.
+9
+1
 None,None,hly2,None,None,None
 at
 Attic
@@ -109,6 +143,8 @@ A room filled with items being stored for potential future use.
 1
 string lights
 An item typically used during the holidays to light up your house.
+6
+8
 None,None,None,None,vd,hly2
 vd
 Void

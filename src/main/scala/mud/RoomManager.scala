@@ -32,13 +32,28 @@ class RoomManager extends Actor {
     val name = lines.next
     val desc = lines.next
     val items = List.fill(lines.next.trim.toInt) {
-      Item(lines.next, lines.next)
+      Item(lines.next, lines.next, lines.next.toInt, lines.next.toInt)
     }
     val exits = lines.next.split(",").map(_.trim)
     keyword -> context.actorOf(Props(new Room(name, desc, items, exits)), keyword)
   }
 
 }
+
+/*MAP FORMAT:
+ * 1) Number of rooms
+ * 2) Room Key
+ * 3) Room Name
+ * 4) Room Description
+ * 5) Number of Items in the room
+ * 6) Item 1 name
+ * 7) Item 1 description
+ * 8) Item 1 speed
+ * 9) Item 1 damage
+ * -- Repeat 6-9 for each item
+ * 10)Room Exit Keys
+ * -- Repeat 2-10 for each room
+ */
 
 object RoomManager {
   case class StartRoom(player:ActorRef)

@@ -22,7 +22,8 @@ object Main extends App {
   
   val NPCNames = Array("Quinn", "Travis", "Morgan", "Freddie", "Lauren", "Naudia", "Ryanna", "Kenna", "Bela", "Mark", "Ghost", "Bygoe")
   val NPCItems = Array("Uniwhale", "Knife", "Computer", "Sunscreen", "Salt", "Gift Card", "Hammock", "Hmm", "Mario", "Hair", "Brick", "Frito")
-  for (i <- 1 until NPCNames.length) npcManager ! NPCManager.newNPC(NPCNames(i))
+  val NPCItemSpecs = Array((1,6),  (1,7),   (9,9),      (9,1),       (1,9),  (1,8),       (3,3),     (6,7), (1,6),   (1,0),  (2,10),  (9,7)) //(Speed, Damage), both out of 10
+  for (i <- 0 until NPCNames.length) npcManager ! NPCManager.newNPC(NPCNames(i),NPCItems(i),NPCItemSpecs(i))
 
   val portNumber = 8080
   val ss = new ServerSocket(portNumber)
