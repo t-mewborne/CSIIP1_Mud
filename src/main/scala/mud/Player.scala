@@ -17,9 +17,11 @@ class Player (
   import Player._
 
 	private var location:ActorRef = null
+	private var victim:ActorRef = null
 	private var inventory:DoublyLinkedList[Item] = new DoublyLinkedList()
 	private var equippedItem:Option[Item] = None
 	private var health = 100
+	private var combatMode = false
 
   def receive = {
     case CheckInput =>
@@ -57,13 +59,26 @@ class Player (
       out.println("Welcome " + name.capitalize + "!")
       context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
       location ! Room.GetDetails
+    case PlayerFound(found, name) =>
+      if (found) context.parent ! PlayerManager.GetVictim(name)
+      else out.println("That player is not in the room. (Player)")
+    case AskNPC(name) =>
+      Main.npcManager ! NPCManager.GetNPCVictim(name)
+    case TakeVictim(victimActor) =>
+      victim = victimActor
+      victim ! Player.Attacked(this)
     case m => out.println("Player recieved unknown message: " + m)
   }
   
   //def currentLocation():Room = location
     
   def processCommand(command: String): Unit = {
-    	if (command == "n" || command =="north") location ! Room.GetExit(0)
+      if (combatMode) {
+        //In this case, "command" is the name of the player to kill.
+        
+        //To set combat mode to false: "flee" command (may not work, but if it does move to a random room); the opponent had fled; the opponent is dead; the player is dead
+      }
+      else if (command == "n" || command =="north") location ! Room.GetExit(0)
 	    else if (command == "s" || command =="south") location ! Room.GetExit(1)
 	    else if (command == "e" || command =="east") location ! Room.GetExit(2)
 	    else if (command == "w" || command =="west") location ! Room.GetExit(3)
@@ -130,7 +145,12 @@ class Player (
     	}
     	else if (command == "players") {
     	  context.parent ! PlayerManager.PrintPlayers
-    	  Main.npcManager ! NPCManager.PrintNPCs
+    	  Main.npcManager ! NPCManager.PrintNPC
+    	}
+    	else if (command.startsWith("kill") && command(4) == ' '){
+    	  var killSplit = command.split(" ")
+    	  location ! Room.FindPlayer(name, killSplit.drop(1).mkString(" "))
+
     	}
     	else if (command == "exit") {
     	  //TODO Add all items of this player into the exit room
@@ -154,10 +174,10 @@ class Player (
 	      out.println("\"get (item)\" ------------------ Pick up a specified item in a room and add it to your inventory")
 	      out.println("\"drop (item)\" ----------------- Drop a specified item from your inventory into the current room.")
 	      out.println("\"equip (item)\"----------------- Equip an item for battle")
-	      out.println("\"unequip (item)\"--------------- Unequip an item for battle")
-	      out.println("\"say (message)\"---------------- Send a message to all players")
+	      out.println("\"unequip\"---------------------- Unequip an item for battle")
+	      out.println("\"say (message)\"---------------- Send a message to all players in the current room")
 	      out.println("\"tell (player) (message)\" ----- Send a message to a specific player")
-	      out.println("\"players\"---------------------- Print players in game")
+	      out.println("\"players\"---------------------- Print players and NPCs in the game")
 	      out.println("\"help\" ------------------------ A list of possible commands")
 	      out.println("\"exit\" ------------------------ Quit the game :(")
 	      out.print("\n=>")
@@ -198,6 +218,9 @@ object Player{
   case object CheckInput
   case class StartingRoom(room:ActorRef)
   case class PrintMessageRoom(message:String,room:ActorRef)
+  case class PlayerFound(found:Boolean, name:String)
+  case class AskNPC(name:String)
+  case class TakeVictim(room:ActorRef)
 }
 /* Format of the map.txt file:
  * 1 Room 1 Key

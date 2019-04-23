@@ -31,6 +31,9 @@ class Room (
       playerList = name.capitalize :: playerList
     case RemovePlayer(name) =>
       playerList = playerList.filter(_ != name.capitalize)
+    case FindPlayer(player1,player2) =>
+      sender ! Player.PlayerFound(playerList.contains(player2), player2)
+      
     case m => sender ! Player.PrintMessage("Room recieved unknown message: " + m)
   }
   
@@ -80,4 +83,5 @@ object Room {
   case class DropItem(item:Item)
   case class AddPlayer(name:String)
   case class RemovePlayer(name:String)
+  case class FindPlayer(player1:String,player2:String)
 }
