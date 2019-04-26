@@ -16,12 +16,8 @@ class NPCManager extends Actor {
       }
     case PrintNPC =>
       var npcs = "\n\nNPCs:\n"
-      for (child <- context.children) npcs += (child.path.name + "\n")
+      for (child <- context.children) npcs += (child.path.name.capitalize + "\n")
       sender ! Player.PrintMessage(npcs)
-    case GetNPCVictim(name) =>
-      if (context.children.exists(_.path.name == name)) {
-      for (child <- context.children) if (child.path.name == name) sender ! Player.TakeVictim(child)
-      } else sender ! Player.PrintMessage("That player was not found room. (NPC Manager)")
     case m => sender ! Player.PrintMessage("NPCManager recieved unknown message: " + m + "\nFrom: " + sender)
   }
 }
@@ -29,6 +25,4 @@ class NPCManager extends Actor {
 object NPCManager {
   case class newNPC(name: String, item: String, itemSpec: (Int,Int))
   case object PrintNPC
-  case class GetNPCVictim(name:String)
-
 }

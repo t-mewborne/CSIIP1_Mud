@@ -12,7 +12,8 @@ class Room (
   
   import Room._
   
-  private var playerList: List[String] = Nil
+  //private var playerList: List[String] = Nil
+  private var playerList: DoublyLinkedList[ActorRef] = new DoublyLinkedList
   
   private var exits: Array[Option[ActorRef]] = null
   
@@ -20,20 +21,27 @@ class Room (
     case LinkExits(roomsMap)=> 
       exits = exitKeys.map(keyword => roomsMap.get(keyword))
     case GetDetails =>
-      sender ! Player.PrintMessage(getName + "\n" + description + "\n" + itemList + "\n" + printExits + "\nPlayers: " + playerList.mkString(", ").capitalize + "\n")
+      var players = ""
+      for (i <- playerList) players += (i.path.name.capitalize + ", ")
+      sender ! Player.PrintMessage(getName + "\n" + description + "\n" + itemList + "\n" + printExits + "\nPlayers: " + players.substring(0, players.length-2).trim + "\n")
     case GetExit(dir) =>
       sender ! Player.TakeExit(getExit(dir))
     case GetItem(itemName) =>
       sender ! Player.TakeItem(getItem(itemName))
     case DropItem(item) =>
       dropItem(item)
-    case AddPlayer(name) =>
-      playerList = name.capitalize :: playerList
-    case RemovePlayer(name) =>
-      playerList = playerList.filter(_ != name.capitalize)
-    case FindPlayer(player1,player2) =>
-      sender ! Player.PlayerFound(playerList.contains(player2), player2)
-      
+    //case AddPlayer(name) =>
+    //  playerList = name.capitalize :: playerList
+    case AddPlayer =>
+      playerList.+=(sender)
+    //case RemovePlayer(name) =>
+      //playerList = playerList.filter(_ != name.capitalize)
+    case RemovePlayer =>
+        playerList.remove(sender)
+    case FindPlayer(player2) =>
+      sender ! Player.PlayerFound(playerList.find(_.path.name == player2))
+    case FleeAttempt(exitNumber) =>
+      sender ! Player.TakeFlee(getExit(exitNumber))
     case m => sender ! Player.PrintMessage("Room recieved unknown message: " + m)
   }
   
@@ -81,7 +89,10 @@ object Room {
   case class GetExit(dir: Int)
   case class GetItem(itemName:String)
   case class DropItem(item:Item)
-  case class AddPlayer(name:String)
-  case class RemovePlayer(name:String)
-  case class FindPlayer(player1:String,player2:String)
+  //case class AddPlayer(name:String)
+  case object AddPlayer
+  //case class RemovePlayer(name:String)
+  case object RemovePlayer
+  case class FindPlayer(player2:String)
+  case class FleeAttempt(extNumber:Int)
 }

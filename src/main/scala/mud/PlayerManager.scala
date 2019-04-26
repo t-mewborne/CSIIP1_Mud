@@ -54,13 +54,6 @@ class PlayerManager extends Actor {
       for (child <- context.children) players += (child.path.name.capitalize + "\n")
       sender ! Player.PrintMessage(players)
       Main.npcManager ! NPCManager.PrintNPC
-    case GetVictim(name) =>
-      if (context.children.exists(_.path.name == name)) {
-      for (child <- context.children) if (child.path.name == name) {
-        sender ! Player.TakeVictim(child)
-        child ! Player.AttackedBy
-      }
-      } else sender ! Player.AskNPC(name)
     case m => sender ! Player.PrintMessage("PlayerManager recieved unknown message: " + m)
   }
 
@@ -73,5 +66,4 @@ object PlayerManager {
   case class TellRoom(message: String, room: ActorRef)
   case class TellPlayer(sendingPlayer: String, receivingPlayer: String, message: String)
   case object PrintPlayers
-  case class GetVictim(name:String)
 }
