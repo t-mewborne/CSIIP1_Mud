@@ -228,7 +228,7 @@ class Player(
         out.println("\"drop <item>\" ----------------- Drop a specified item from your inventory into the current room.")
         out.println("\"kill <player>\" --------------- Attack a specified player")
       } else {
-        out.println("flee----------------------------- Exit the battle")
+        out.println("\"flee\" ------------------------ Exit the battle")
       }
       out.println("\"look\" ------------------------ Reprint the description, items, possible exits, and players in the current room")
       out.println("\"inv\" ------------------------- Print what is currently in your inventory")
