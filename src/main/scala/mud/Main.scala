@@ -29,6 +29,7 @@ object Main extends App {
   val ss = new ServerSocket(portNumber)
   println("Server active on port " + portNumber)
 
+
   while (true) {
     val sock = ss.accept()
     val in = new BufferedReader(new InputStreamReader(sock.getInputStream))

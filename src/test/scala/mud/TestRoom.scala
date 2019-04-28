@@ -34,13 +34,13 @@ Items: sword, chair
   @Test def testGetItem: Unit = {
     assertEquals(None, room.getItem("Homework"))
     val sword = room.getItem("sword").get
-    assertEquals(Item("sword", "A long pointy thing to slice and dice."), sword)
+    assertEquals(Item("sword", "A long pointy thing to slice and dice.", 1, 10), sword)
     assertEquals(None, room.getItem("sword"))
   }
   
   @Test def testDropItem: Unit = {
     assertEquals(None, room.getItem("Homework"))
-    val item = Item("Homework", "Fun stuff you do for Dr. Lewis.")
+    val item = Item("Homework", "Fun stuff you do for Dr. Lewis.", 1, 10)
     room.dropItem(item)
     assertEquals(item, room.getItem("Homework"))
   }

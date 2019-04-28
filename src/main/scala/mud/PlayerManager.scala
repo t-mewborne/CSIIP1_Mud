@@ -40,7 +40,7 @@ class PlayerManager extends Actor {
       }
     case TellPlayer(sendingPlayer, receivingPlayer, message) =>
       if (!context.children.exists(_.path.name == receivingPlayer)) {
-        sender ! Player.PrintMessage("\nPlayer \"" + receivingPlayer.capitalize + "\" does not exist.\n")
+        sender ! Player.PrintMessage("\nPlayer \"" + receivingPlayer.capitalize + "\" does not exist. (Remember: You cannot send messaged to non-player characters (NPCs))\n")
       } else {
         for (child <- context.children) {
           if (child.path.name == receivingPlayer) {

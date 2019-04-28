@@ -70,7 +70,7 @@ class Player(
         case Some(i) =>
           i ! Attacked(self)
           victim = i
-          context.parent ! PlayerManager.TellRoom(name + " is attacking " + victim + "!",location)
+          context.parent ! PlayerManager.TellRoom(name.capitalize + " is attacking " + victim.path.name.capitalize + "!",location)
           combatMode = true
           Main.activityManager ! ActivityManager.Enqueue(HitYou(health), rand.nextInt(itemSpeed))
         case None => out.print("\nThat player is not in the room.\n\n=>")
@@ -79,23 +79,23 @@ class Player(
       if (combatMode) {
         var damage = rand.nextInt(itemDamage + 1)
         victim ! HitMe(damage, itemName,health)
-        out.print("\n\nYou dealt " + damage + " damage to " + victim.path.name.capitalize + " with \"" + itemName + "\".\nYour health: " + health + "\tOpponent's Health: "+ (oppHealth-damage) +"\n\n=>")
+        out.print("\n\nYou dealt " + damage + " damage to " + victim.path.name.capitalize + " with \"" + itemName.capitalize + "\".\nYour health: " + health + "\tOpponent's Health: "+ (if (oppHealth-damage<0) "0" else oppHealth-damage) +"\n\n=>")
       }
     case HitMe(damage, item, oppHealth) =>
       if (combatMode) {
         health -= damage
         if (health < 0) health = 0
-        out.print("\n\n" + victim.path.name.capitalize + " dealt " + itemDamage + " damage to you with \"" + item + "\".\nYour health: " + health + "\tOpponent's Health: "+ oppHealth +"\n\n=>")
+        out.print("\n\n" + victim.path.name.capitalize + " dealt " + damage + " damage to you with \"" + item.capitalize + "\".\nYour health: " + health + "\tOpponent's Health: "+ oppHealth +"\n\n=>")
         Main.activityManager ! ActivityManager.Enqueue(HitYou(oppHealth), rand.nextInt(itemSpeed))
       } else victim ! PlayerBusy
       if (health <= 0) {
         out.print("\n\n" + victim.path.name.capitalize + " killed you.\n\n")
-        sender ! OtherPlayerKilled(name.capitalize)
+        context.parent ! PlayerManager.TellRoom(victim.path.name.capitalize + " " + "killed " + name.capitalize + "!", location)
+        victim ! OtherPlayerKilled(name.capitalize)
         removePlayerFromGame
       }
     case OtherPlayerKilled(opponentName) =>
-      out.print("\n\nYou killed " + opponentName + "!\n\n=>")
-      context.parent ! PlayerManager.TellRoom(name.capitalize + " " + "killed " + opponentName, location)
+      out.print("\n\n-----You killed " + opponentName + "!-----\n\n=>")
       combatMode = false
       victim = null
     case OpponentFled =>
@@ -213,6 +213,8 @@ class Player(
       location ! Room.FleeAttempt(rand.nextInt(6))
     } else if (command == "health"){
       out.print("\nHealth: " + health + "\n\n=>")
+    } else if (command.startsWith("tp") && command(2) == ' '){ //Easter egg command
+      out.print("\nNot yet implemented\n\n=>")
     } else if (command == "help") {
       out.println()
       if (!combatMode) {
