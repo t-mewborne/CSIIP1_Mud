@@ -15,7 +15,7 @@ class RoomManager extends Actor {
   def receive = {
 	  case StartRoom(entity) =>
 	    entity ! Player.StartingRoom(rooms(keywords(rand.nextInt(keywords.length))))
-    case m => sender ! Player.PrintMessage("RoomManager recieved unknown message: " + m)
+    case m => sender ! Player.PrintMessage("\n*****RoomManager received an unknown message: " + m + "*****")
   }
 
   def readRooms(): Map[String, ActorRef] = {

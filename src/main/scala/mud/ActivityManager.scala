@@ -22,7 +22,7 @@ class ActivityManager extends Actor {
     case Enqueue(what, when) =>
       PQ.enqueue(new Activity(what, sender, when + time))
       //println("Activity Added:\tWhat:" + what + "\t When:" + (when+time) + "\t\t Current Time:" + time + "\t\tWho:" + sender)
-    case m => sender ! Player.PrintMessage("ActivityManager recieved unknown message: " + m)
+    case m => sender ! Player.PrintMessage("\n*****ActivityManager received an unknown message: " + m + "*****")
   }
 }
 

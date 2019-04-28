@@ -52,9 +52,8 @@ class PlayerManager extends Actor {
     case PrintPlayers =>
       var players:String = "\nPlayers:\n"
       for (child <- context.children) players += (child.path.name.capitalize + "\n")
-      sender ! Player.PrintMessage(players)
-      Main.npcManager ! NPCManager.PrintNPC
-    case m => sender ! Player.PrintMessage("PlayerManager recieved unknown message: " + m)
+      Main.npcManager ! NPCManager.PrintNPCAndPlayers(sender,players)
+    case m => sender ! Player.PrintMessage("\n*****PlayerManager received an unknown message: " + m + "*****")
   }
 
 }

@@ -42,7 +42,7 @@ class Room (
       sender ! Player.PlayerFound(playerList.find(_.path.name == player2))
     case FleeAttempt(exitNumber) =>
       sender ! Player.TakeFlee(getExit(exitNumber))
-    case m => sender ! Player.PrintMessage("Room recieved unknown message: " + m)
+    case m => sender ! Player.PrintMessage("\n*****Room received an unknown message: " + m + "*****")
   }
   
   def getName(): String = name
@@ -89,9 +89,7 @@ object Room {
   case class GetExit(dir: Int)
   case class GetItem(itemName:String)
   case class DropItem(item:Item)
-  //case class AddPlayer(name:String)
   case object AddPlayer
-  //case class RemovePlayer(name:String)
   case object RemovePlayer
   case class FindPlayer(player2:String)
   case class FleeAttempt(extNumber:Int)

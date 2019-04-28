@@ -70,26 +70,26 @@ class Player(
         case Some(i) =>
           i ! Attacked(self)
           victim = i
+          context.parent ! PlayerManager.TellRoom(name + " is attacking " + victim + "!",location)
           combatMode = true
-          Main.activityManager ! ActivityManager.Enqueue(HitYou, rand.nextInt(itemSpeed))
+          Main.activityManager ! ActivityManager.Enqueue(HitYou(health), rand.nextInt(itemSpeed))
         case None => out.print("\nThat player is not in the room.\n\n=>")
       }
-    case HitYou =>
+    case HitYou(oppHealth) =>
       if (combatMode) {
-        
         var damage = rand.nextInt(itemDamage + 1)
-        victim ! HitMe(self, damage, itemName)
-        out.print("\n\nYou dealt " + damage + " damage to " + name.capitalize + " with \"" + itemName + "\".\nOpponent's health: " + health + "\n\n=>")
+        victim ! HitMe(damage, itemName,health)
+        out.print("\n\nYou dealt " + damage + " damage to " + victim.path.name.capitalize + " with \"" + itemName + "\".\nYour health: " + health + "\tOpponent's Health: "+ (oppHealth-damage) +"\n\n=>")
       }
-    case HitMe(playerThatHit, damage, item) =>
+    case HitMe(damage, item, oppHealth) =>
       if (combatMode) {
         health -= damage
         if (health < 0) health = 0
-        out.print("\n\n" + playerThatHit.path.name.capitalize + " dealt " + itemDamage + " damage to you with \"" + item + "\".\nYour health: " + health + "\n\n=>")
-        Main.activityManager ! ActivityManager.Enqueue(HitYou, rand.nextInt(itemSpeed))
-      } else playerThatHit ! PrintMessage("\nPlayer not in combat mode.")
+        out.print("\n\n" + victim.path.name.capitalize + " dealt " + itemDamage + " damage to you with \"" + item + "\".\nYour health: " + health + "\tOpponent's Health: "+ oppHealth +"\n\n=>")
+        Main.activityManager ! ActivityManager.Enqueue(HitYou(oppHealth), rand.nextInt(itemSpeed))
+      } else victim ! PlayerBusy
       if (health <= 0) {
-        out.print("\n\n" + playerThatHit.path.name.capitalize + " killed you.\n\n")
+        out.print("\n\n" + victim.path.name.capitalize + " killed you.\n\n")
         sender ! OtherPlayerKilled(name.capitalize)
         removePlayerFromGame
       }
@@ -97,9 +97,11 @@ class Player(
       out.print("\n\nYou killed " + opponentName + "!\n\n=>")
       context.parent ! PlayerManager.TellRoom(name.capitalize + " " + "killed " + opponentName, location)
       combatMode = false
+      victim = null
     case OpponentFled =>
       out.print("\n\nYour opponent has fled.\n\n=>")
       combatMode = false
+      victim = null
     case Attacked(otherPlayer) =>
       if (!combatMode){
         victim = otherPlayer
@@ -107,20 +109,23 @@ class Player(
         out.print("\n\n"+otherPlayer.path.name.capitalize + " is attacking you!\n\n=>")
       } else otherPlayer ! PlayerBusy
     case PlayerBusy =>
-        out.println("That player is busy\n\n=>")
+        out.print("\nThat player is busy.\n\n=>")
         combatMode = false
+        victim = null
     case TakeFlee(optRoom) =>
-        if (optRoom == None) out.print("\nFlee Attempt Failed\n\n=>")
-        else {
+      if (optRoom == None) out.print("\nFlee Attempt Failed\n\n=>")
+      else {
+        combatMode = false
+        victim ! OpponentFled
         location ! Room.RemovePlayer
         context.parent ! PlayerManager.TellRoom(name.capitalize + " fled battle.", location)
         location = optRoom.get
-        out.println("\nFlee Success!\n")
+        out.print("\nFlee attempt successful\n\n")
         location ! Room.AddPlayer
         context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
         location ! Room.GetDetails
         }
-    case m => out.println("Player recieved unknown message: " + m)
+    case m => out.println("\n*****Player received an unknown message: " + m + "*****")
   }
 
   //def currentLocation():Room = location
@@ -199,15 +204,13 @@ class Player(
       context.parent ! PlayerManager.TellPlayer(name, tellSplit(1).toLowerCase, tellSplit.drop(2).mkString(" "))
     } else if (command == "players") {
       context.parent ! PlayerManager.PrintPlayers
-      Main.npcManager ! NPCManager.PrintNPC
+      //Main.npcManager ! NPCManager.PrintNPC
     } else if (command == "exit" && !combatMode) {
       out.println("\nGoodbye!\n")
       removePlayerFromGame
     } else if (command == "flee" && combatMode) {
-      combatMode = false
-      location ! Room.FleeAttempt(rand.nextInt(5))
-      victim ! OpponentFled
-      out.print("\nYou have fled.\n\n=>")
+    	out.print("\nAttempting to flee...")
+      location ! Room.FleeAttempt(rand.nextInt(6))
     } else if (command == "health"){
       out.print("\nHealth: " + health + "\n\n=>")
     } else if (command == "help") {
@@ -260,8 +263,14 @@ class Player(
 
   //Build a String with the contents of the inventory for printing.
   def inventoryListing(): String = {
-    if (inventory.length > 0) "Inventory:\n" + inventory.map(item => "\t" + item.name.capitalize + " - " + item.desc + "\n\t\tSpeed: " + item.speed + " Damage: " + item.damage).mkString("\n")
-    else "Inventory: Empty"
+    var inv = "Inventory: "
+    if (inventory.length > 0) inv += "\n" + inventory.map(item => "\t" + item.name.capitalize + " - " + item.desc + "\n\t\tSpeed: " + item.speed + " Damage: " + item.damage).mkString("\n")
+    else inv += "Empty"
+    equippedItem match {
+      case Some(i) => inv += "\nEquipped Item:\n\t" + i.name.capitalize + " - " + i.desc + "\n\t\tSpeed: " + i.speed + " Damage: " + i.damage
+      case None => inv += "\nNo Equipped Items."
+    }
+    inv
   }
 
   def removePlayerFromGame: Unit = {
@@ -286,8 +295,8 @@ object Player {
   case class PlayerFound(optPlayer: Option[ActorRef])
   case class Attacked(otherPlayer: ActorRef)
   case class TakeVictim(room: ActorRef)
-  case object HitYou
-  case class HitMe(playerThatHit: ActorRef, damage: Int, item: String)
+  case class HitYou(oppHealth:Int)
+  case class HitMe(damage: Int, item: String,oppHealth:Int)
   case object OpponentFled
   case class OtherPlayerKilled(opponentName:String)
   case object PlayerBusy

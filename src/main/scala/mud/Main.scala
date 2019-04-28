@@ -25,7 +25,7 @@ object Main extends App {
   val NPCItemSpecs = Array((1,6),  (1,7),    (9,9),      (9,1),       (1,9),    (1,8),       (3,3),     (6,7),   (1,6),   (1,0),  (2,10),  (9,7)) //(Speed, Damage), ((0,10],[0,10])
   for (i <- 0 until NPCNames.length) npcManager ! NPCManager.newNPC(NPCNames(i),NPCItems(i),NPCItemSpecs(i))
 
-  val portNumber = 8080
+  val portNumber = 8181
   val ss = new ServerSocket(portNumber)
   println("Server active on port " + portNumber)
 
@@ -36,14 +36,14 @@ object Main extends App {
     Future {
       out.print("What is your name?\n\n=>")
       val name = in.readLine().trim.toLowerCase
-      if (NPCNames.contains(name)) {
-        out.println("\nSorry, that name is taken by an NPC. Please try again. \n")
+      if (!name.forall(x => x.isLetterOrDigit)) {
+        out.println("\nSorry, your name contains an illegal character. Please try again. \n")
         in.close()
         out.close()
         sock.close()
-      }
-      if (!name.forall(x => x.isLetterOrDigit)) {
-        out.println("\nSorry, your name contains an illegal character. Please try again. \n")
+      } 
+      else if (NPCNames.contains(name)) {
+        out.println("\nSorry, that name is taken by an NPC. Please try again. \n")
         in.close()
         out.close()
         sock.close()

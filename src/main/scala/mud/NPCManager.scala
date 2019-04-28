@@ -14,15 +14,16 @@ class NPCManager extends Actor {
         val NPC = context.actorOf(Props(new NPC(name, item, itemSpec)), name)
         Main.roomManager ! RoomManager.StartRoom(NPC)
       }
-    case PrintNPC =>
-      var npcs = "\n\nNPCs:\n"
-      for (child <- context.children) npcs += (child.path.name.capitalize + "\n")
-      sender ! Player.PrintMessage(npcs)
-    case m => sender ! Player.PrintMessage("NPCManager recieved unknown message: " + m + "\nFrom: " + sender)
+    case PrintNPCAndPlayers(who, players) =>
+      var npcs = "\nNPCs:\n"
+      for (child <- context.children) npcs += (child.path.name.capitalize
+        + "\n")
+      who ! Player.PrintMessage(players + npcs)
+    case m => sender ! Player.PrintMessage("\n*****NPCManager received an unknown message: " + m + "*****")
   }
 }
 
 object NPCManager {
-  case class newNPC(name: String, item: String, itemSpec: (Int,Int))
-  case object PrintNPC
+  case class newNPC(name: String, item: String, itemSpec: (Int, Int))
+  case class PrintNPCAndPlayers(who: ActorRef, players: String)
 }

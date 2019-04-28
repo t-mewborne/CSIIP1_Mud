@@ -21,6 +21,7 @@ class NPC(
   def receive = {
     case RandomMove =>
       if (!combatMode) {
+        victim = null
         val r = rand.nextInt(6)
         //println("Random Move Called for NPC " + name)
         location ! Room.GetExit(r)
@@ -43,26 +44,33 @@ class NPC(
       location ! Room.AddPlayer
       context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
       Main.activityManager ! ActivityManager.Enqueue(RandomMove, rand.nextInt(75) + 50)
-    //println("Created NPC \t" + name + "\t\twith a starting room of \t" + location)
     case Player.Attacked(otherPlayer) =>
       if (!combatMode) {
         victim = otherPlayer
         combatMode = true
       } else otherPlayer ! Player.PlayerBusy
-    case Player.HitYou =>
-      var damage = rand.nextInt(itemSpec._2 + 1)
-      victim ! Player.HitMe(self, damage, item)
-    case Player.HitMe(playerThatHit, damage, item) =>
-      health -= damage
-      if (health <= 0) {
-        health = 0
-        sender ! Player.OtherPlayerKilled(name.capitalize)
-        removeNPCFromGame
-      } else Main.activityManager ! ActivityManager.Enqueue(Player.HitYou, rand.nextInt(itemSpec._1))
+    case Player.HitYou(oppHealth) =>
+      if (combatMode){
+        var damage = rand.nextInt(itemSpec._2 + 1)
+        victim ! Player.HitMe(damage, item,health)
+      }
+    case Player.HitMe(damage, item,oppHealth) =>
+      if (combatMode) {
+        health -= damage
+        if (health <= 0) {
+          health = 0
+          sender ! Player.OtherPlayerKilled(name.capitalize)
+          removeNPCFromGame
+        } else Main.activityManager ! ActivityManager.Enqueue(Player.HitYou(health), rand.nextInt(itemSpec._1 + 1))
+      }
+    case Player.OpponentFled =>
+      combatMode = false
     case Player.OtherPlayerKilled(opponentName) =>
       context.parent ! PlayerManager.TellRoom(name.capitalize + " " + "killed " + opponentName, location)
       combatMode = false
-    case m => sender ! Player.PrintMessage("NPC received an unknown message: " + m)
+    case Player.PlayerBusy =>
+      combatMode = false
+    case m => sender ! Player.PrintMessage("\n*****NPC received an unknown message: " + m + "*****")
   }
 
   def removeNPCFromGame: Unit = {
