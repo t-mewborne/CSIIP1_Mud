@@ -14,6 +14,8 @@ class NPCManager extends Actor {
         val NPC = context.actorOf(Props(new NPC(name, item, itemSpec)), name)
         Main.roomManager ! RoomManager.StartRoom(NPC)
       }
+    case EnqueueNewNPC(name,item,itemSpec) =>
+     Main.activityManager ! ActivityManager.Enqueue(newNPC(name,item,itemSpec), 2000)
     case PrintNPCAndPlayers(who, players) =>
       var npcs = "\nNPCs:\n"
       for (child <- context.children) npcs += (child.path.name.capitalize
@@ -25,5 +27,6 @@ class NPCManager extends Actor {
 
 object NPCManager {
   case class newNPC(name: String, item: String, itemSpec: (Int, Int))
+  case class EnqueueNewNPC(name: String, item: String, itemSpec: (Int, Int))
   case class PrintNPCAndPlayers(who: ActorRef, players: String)
 }

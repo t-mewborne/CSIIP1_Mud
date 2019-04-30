@@ -13,8 +13,8 @@ class TestRoom {
   private var eastRoom: Room = null
   
   @Before def getRoom(): Unit = {
-    room = Room.rooms("mbr")
-    eastRoom = Room.rooms("None")
+    //room = Room.rooms("mbr")
+    //eastRoom = Room.rooms("None")
   }
   
   @Test def testDescription: Unit = {

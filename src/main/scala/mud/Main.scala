@@ -20,9 +20,9 @@ object Main extends App {
   system.scheduler.schedule(0.seconds, 0.1.seconds, playerManager, PlayerManager.CheckAllInput)
   system.scheduler.schedule(0.seconds, 0.1.seconds, activityManager, ActivityManager.CheckQueue)
   
-  val NPCNames = Array("quinn",    "travis", "morgan",   "freddie",   "lauren", "naudia",    "ryanna",  "kenna", "bela",  "mark", "ghost", "bygoe")
-  val NPCItems = Array("Uniwhale", "Knife",  "Computer", "Sunscreen", "Salt",   "Gift Card", "Hammock", "Hmm",   "Mario", "Hair", "Brick", "Frito")
-  val NPCItemSpecs = Array((1,6),  (1,7),    (9,9),      (9,1),       (1,9),    (1,8),       (3,3),     (6,7),   (1,6),   (1,0),  (2,10),  (9,7)) //(Speed, Damage), ((0,10],[0,10])
+  val NPCNames = Array("quinn",    "travis", "morgan",   "freddie",   "lauren", "naudia",    "ryanna",  "kenna", "bela",  "mark", "ghost", "bygoe", "eliza")
+  val NPCItems = Array("Uniwhale", "Knife",  "Computer", "Sunscreen", "Salt",   "Gift Card", "Hammock", "Hmm",   "Mario", "Hair", "Brick", "Frito", "Benji")
+  val NPCItemSpecs = Array((1,6),  (1,7),    (9,9),      (9,1),       (1,9),    (1,8),       (3,3),     (6,7),   (1,6),   (1,0),  (2,10),  (9,7),   (7,3)) //(Speed, Damage), ((0,10],[0,10])
   for (i <- 0 until NPCNames.length) npcManager ! NPCManager.newNPC(NPCNames(i),NPCItems(i),NPCItemSpecs(i))
 
   val portNumber = 8181

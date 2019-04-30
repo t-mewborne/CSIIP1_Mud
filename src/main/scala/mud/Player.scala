@@ -7,6 +7,7 @@ import java.io.BufferedReader
 import java.net.Socket
 import akka.actor.Kill
 import scala.util.Random
+import scala.collection.mutable.ArrayBuffer
 
 class Player(
   name: String,
@@ -125,13 +126,34 @@ class Player(
         context.parent ! PlayerManager.TellRoom(name.capitalize + " has entered the room.", location)
         location ! Room.GetDetails
         }
+    case TakePath(path) =>
+      var printShortPath = ""
+      if (path.length == 0){
+        printShortPath += "\nRoom does not exist.\n"
+      } else {
+        printShortPath += "\nShortest Path:\n"
+        for (i <- path.length - 1 to 1 by -1) {
+          val c = path(i)
+          printShortPath += "From \"" + c._2 + "\", go "
+          if (c._1 == 0) printShortPath += "North"
+          else if (c._1 == 1) printShortPath += "South"
+          else if (c._1 == 2) printShortPath += "East"
+          else if (c._1 == 3) printShortPath += "West"
+          else if (c._1 == 4) printShortPath += "Up"
+          else if (c._1 == 5) printShortPath += "Down"
+          else printShortPath += "\n\n--Something went wrong--\n\n"
+          printShortPath += "\n"
+        }
+      }
+      printShortPath += ("\n=>")
+      out.print(printShortPath)
     case m => out.println("\n*****Player received an unknown message: " + m + "*****")
   }
 
   //def currentLocation():Room = location
 
   def processCommand(command: String): Unit = {
-    val notAllowed = List("n", "s", "e", "w", "u", "d", "north", "south", "east", "west", "up", "down", "get", "drop", "kill", "exit")
+    val notAllowed = List("n", "s", "e", "w", "u", "d", "north", "south", "east", "west", "up", "down", "get", "drop", "kill", "exit", "shortestPath", "rooms")
 
     if ((command == "n" || command == "north") && !combatMode) location ! Room.GetExit(0)
     else if ((command == "s" || command == "south") && !combatMode) location ! Room.GetExit(1)
@@ -212,10 +234,18 @@ class Player(
     	out.print("\nAttempting to flee...")
       location ! Room.FleeAttempt(rand.nextInt(6))
     } else if (command == "health"){
-      out.print("\nHealth: " + health + "\n\n=>")
+        out.print("\nHealth: " + health + "\n\n=>")
     } else if (command.startsWith("tp") && command(2) == ' '){ //Easter egg command
-      out.print("\nNot yet implemented\n\n=>")
-    } else if (command == "help") {
+        out.print("\nNot yet implemented\n\n=>")
+    } else if (command.startsWith("shortestpath") && command(12) == ' '){
+        val find = command.split(" ").drop(1).mkString(" ")
+        val roomName = location.path.name
+        if (find!=roomName) Main.roomManager ! RoomManager.ShortestPath(roomName, find)
+        else out.print("\nYou are already in that room\n\n=>")
+    } else if (command == "rooms") {
+        Main.roomManager ! RoomManager.PrintRooms
+    }
+      else if (command == "help") {
       out.println()
       if (!combatMode) {
         out.println("\"n\" --------------------------- Move North")
@@ -227,6 +257,8 @@ class Player(
         out.println("\"get <item>\" ------------------ Pick up a specified item in a room and add it to your inventory")
         out.println("\"drop <item>\" ----------------- Drop a specified item from your inventory into the current room.")
         out.println("\"kill <player>\" --------------- Attack a specified player")
+        out.println("\"shortestPath <roomKeyword> ---- Find the shortest path to a room.")
+        out.println("\"rooms\" ----------------------- Print all the rooms and their keywords.")
       } else {
         out.println("\"flee\" ------------------------ Exit the battle")
       }
@@ -302,6 +334,7 @@ object Player {
   case object OpponentFled
   case class OtherPlayerKilled(opponentName:String)
   case object PlayerBusy
+  case class TakePath(path:ArrayBuffer[(Int,String)])
 }
 /* Format of the map.txt file:
  * 1 Room 1 Key

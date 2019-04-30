@@ -4,17 +4,31 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 import scala.util.Random
+import scala.collection.mutable.ArrayBuffer
 
 class RoomManager extends Actor {
-  var keywords:List[String]=List()
+  var keywords: List[String] = List()
+  var names: List[String] = List()
   val rand = new Random
-	val rooms = readRooms()
-	for(room <- context.children) room ! Room.LinkExits(rooms)
-	import RoomManager._
-	
+  private var connect: Map[String, Array[String]] = Map()
+  val rooms = readRooms()
+  
+  for (room <- context.children) room ! Room.LinkExits(rooms)
+  import RoomManager._
+
   def receive = {
-	  case StartRoom(entity) =>
-	    entity ! Player.StartingRoom(rooms(keywords(rand.nextInt(keywords.length))))
+    case StartRoom(entity) =>
+      entity ! Player.StartingRoom(rooms(keywords(rand.nextInt(keywords.length))))
+    case ShortestPath(playerLoc, find) =>
+      sender ! Player.TakePath(shortestPath(playerLoc,find))
+    case PrintRooms =>
+      var namesAndKeywords = "\nRooms:\t\t\tKeywords:\n"
+      for (i <- 0 to names.length - 1) {
+        namesAndKeywords += (names(i) + " ")
+        for (i <- 0 to 22 - names(i).length) namesAndKeywords += "-"
+        namesAndKeywords += keywords(i) + "\n"
+      }
+      sender ! Player.PrintMessage(namesAndKeywords)
     case m => sender ! Player.PrintMessage("\n*****RoomManager received an unknown message: " + m + "*****")
   }
 
@@ -30,17 +44,35 @@ class RoomManager extends Actor {
     val keyword = lines.next
     keywords = keyword :: keywords
     val name = lines.next
+    names = name :: names
     val desc = lines.next
     val items = List.fill(lines.next.trim.toInt) {
       Item(lines.next, lines.next, lines.next.toInt, lines.next.toInt)
     }
     val exits = lines.next.split(",").map(_.trim)
+    connect = connect + (keyword -> exits)
     keyword -> context.actorOf(Props(new Room(name, desc, items, exits)), keyword)
   }
 
+  def shortestPath(playerLocation: String, searchKeyword: String, visited: Set[String] = Set.empty): ArrayBuffer[(Int,String)] = {
+    if (searchKeyword == playerLocation) ArrayBuffer((-1,searchKeyword)) else {
+      val newVisited = visited + playerLocation
+      var ret = (1000000000, ArrayBuffer[(Int,String)]())
+      
+      for (i <- 0 to 5){
+        if (connect(playerLocation)(i) != "None" && !visited(connect(playerLocation)(i))) {
+          //ret = ret min 
+          val shortPath = shortestPath(connect(playerLocation)(i), searchKeyword, newVisited)
+          shortPath += (i -> playerLocation)
+          if (shortPath.size < ret._1 && shortPath(0)._2 == searchKeyword) ret = (shortPath.size,shortPath)
+        }
+      }
+      ret._2
+    }
+  }
 }
 
-/*MAP FORMAT:
+/*REQUIRED MAP FORMAT:
  * 1) Number of rooms
  * 2) Room Key
  * 3) Room Name
@@ -56,5 +88,7 @@ class RoomManager extends Actor {
  */
 
 object RoomManager {
-  case class StartRoom(player:ActorRef)
+  case class StartRoom(player: ActorRef)
+  case class ShortestPath(playerLoc: String, find: String)
+  case object PrintRooms
 }

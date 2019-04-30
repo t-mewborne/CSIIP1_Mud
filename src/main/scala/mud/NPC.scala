@@ -75,6 +75,7 @@ class NPC(
 
   def removeNPCFromGame: Unit = {
     //TODO Add all items of this player into the exit room
+    context.parent ! NPCManager.EnqueueNewNPC(name, item, itemSpec)
     location ! Room.RemovePlayer //Remove the player from the room so their ghost does not remain
     context.stop(self) //Kill the actor so people cannot send messages to dead actors
   }
