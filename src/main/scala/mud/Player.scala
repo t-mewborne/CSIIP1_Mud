@@ -255,10 +255,10 @@ class Player(
         out.println("\"u\" --------------------------- Move Up")
         out.println("\"d\" --------------------------- Move Down")
         out.println("\"get <item>\" ------------------ Pick up a specified item in a room and add it to your inventory")
-        out.println("\"drop <item>\" ----------------- Drop a specified item from your inventory into the current room.")
+        out.println("\"drop <item>\" ----------------- Drop a specified item from your inventory into the current room")
         out.println("\"kill <player>\" --------------- Attack a specified player")
-        out.println("\"shortestPath <roomKeyword> ---- Find the shortest path to a room.")
-        out.println("\"rooms\" ----------------------- Print all the rooms and their keywords.")
+        out.println("\"shortestPath <roomKeyword>\" -- Find the shortest path to a room (keywords can be found by typing \"room\")")
+        out.println("\"rooms\" ----------------------- Print all the rooms and their keywords")
       } else {
         out.println("\"flee\" ------------------------ Exit the battle")
       }
@@ -270,7 +270,7 @@ class Player(
       out.println("\"tell <player> <message>\" ----- Send a message to a specific player")
       out.println("\"players\"---------------------- Print players and NPCs in the game")
       out.println("\"help\" ------------------------ A list of possible commands")
-      out.println("\"health\" ---------------------- Print your current health.")
+      out.println("\"health\" ---------------------- Print your current health")
       out.println("\"exit\" ------------------------ Quit the game :(")
       out.print("\n=>")
     } else if (notAllowed.contains(command)) {
