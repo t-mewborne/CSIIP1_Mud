@@ -84,7 +84,7 @@ class Room (
 }
 
 object Room {
-  case class LinkExits(roomsMap: Map[String,ActorRef])
+  case class LinkExits(roomsMap: BSTMap[String,ActorRef])
   case object GetDetails
   case class GetExit(dir: Int)
   case class GetItem(itemName:String)

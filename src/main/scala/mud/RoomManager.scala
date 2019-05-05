@@ -32,12 +32,22 @@ class RoomManager extends Actor {
     case m => sender ! Player.PrintMessage("\n*****RoomManager received an unknown message: " + m + "*****")
   }
 
-  def readRooms(): Map[String, ActorRef] = {
+//  def readRooms(): Map[String, ActorRef] = {
+//    val source = scala.io.Source.fromFile("map.txt")
+//    val lines = source.getLines()
+//    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)).toMap
+//    source.close()
+//    rooms
+//  }
+  
+  def readRooms(): BSTMap[String, ActorRef] = {
     val source = scala.io.Source.fromFile("map.txt")
     val lines = source.getLines()
-    val rooms = Array.fill(lines.next.trim.toInt)(readRoom(lines)).toMap
+    val numRooms = lines.next.trim.toInt
+    var treeMap: BSTMap[String,ActorRef] = new BSTMap((a,b)=>a>b)
+    for (i <- 1 to numRooms) treeMap += readRoom(lines)
     source.close()
-    rooms
+    treeMap
   }
 
   def readRoom(lines: Iterator[String]): (String, ActorRef) = {

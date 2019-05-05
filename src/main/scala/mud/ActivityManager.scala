@@ -5,7 +5,8 @@ import akka.actor.ActorRef
 
 class ActivityManager extends Actor {
   import ActivityManager._
-  val PQ = new PriorityQueue[Activity]((a1, a2) => a2.when - a1.when)
+  val PQ = new BinaryHeapPQ[Activity]((a1, a2) => a1.when<a2.when)
+  //PriorityQueue[Activity]((a1, a2) => a2.when - a1.when)
 
   var time = 0
 
