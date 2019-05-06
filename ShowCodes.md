@@ -13,3 +13,9 @@ found a bug in item handling that I left two comments on.
 ## Show Code #7 on 3/28 (4 of 4 points)
 
 Code compiles and runs as expected.
+
+## Show Code #10 on 4/23 (4 of 4 points)
+
+Compiles and runs. Combat and related commands work as expected. One odd thing that I noticed is that your MUD
+seems to use a lot of CPU power. It isn't clear to me why that is the case. The frequency with which you check the
+stuff in the actor system should not be causing problems.
