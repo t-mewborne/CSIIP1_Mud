@@ -223,7 +223,9 @@ class Player(
       out.print("\n=> ")
     } else if (command.startsWith("tell") && command(4) == ' ') {
       var tellSplit = command.split(" ")
-      context.parent ! PlayerManager.TellPlayer(name, tellSplit(1).toLowerCase, tellSplit.drop(2).mkString(" "))
+      val receivingPlayer = tellSplit(1).toLowerCase
+      if (name != receivingPlayer) context.parent ! PlayerManager.TellPlayer(name, receivingPlayer, tellSplit.drop(2).mkString(" "))
+      else out.print("\nYou cannot send messages to yourself.\n\n=>")
     } else if (command == "players") {
       context.parent ! PlayerManager.PrintPlayers
       //Main.npcManager ! NPCManager.PrintNPC
@@ -235,7 +237,7 @@ class Player(
       location ! Room.FleeAttempt(rand.nextInt(6))
     } else if (command == "health"){
         out.print("\nHealth: " + health + "\n\n=>")
-    } else if (command.startsWith("tp") && command(2) == ' '){ //Easter egg command
+    } else if (command.startsWith("tp") && command(2) == ' ' && command.length>3){ //Easter egg command
         out.print("\nNot yet implemented\n\n=>")
     } else if (command.startsWith("shortestpath") && command(12) == ' '){
         val find = command.split(" ").drop(1).mkString(" ")
